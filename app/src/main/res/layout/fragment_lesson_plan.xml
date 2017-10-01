@@ -5,6 +5,5 @@
     android:orientation="vertical"
     android:paddingBottom="16dp"
     android:paddingTop="16dp"
-    tools:context="blackeagle.sp2dobczyceapp.LessonPlanActivity$PlaceholderFragment" >
-</LinearLayout>
+    tools:context="blackeagle.sp2dobczyceapp.LessonPlanActivity$PlaceholderFragment"></LinearLayout>
 

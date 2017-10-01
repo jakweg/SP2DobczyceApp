@@ -1,16 +1,87 @@
 package blackeagle.sp2dobczyceapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
+import android.widget.ScrollView;
 
 public class AboutActivity extends AppCompatActivity {
+
+    int clicks = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Settings.applyNowDarkTheme())
+            setTheme(R.style.DarkTheme);
         setContentView(R.layout.activity_about);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(150);
+                } catch (InterruptedException e) {
+                    //empty
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ViewGroup viewGroup = ((ScrollView) findViewById(R.id.scrollBox));
+                        Animation translateAnimation = new AlphaAnimation(0.f, 1.f);
+                        translateAnimation.setDuration(400);
+                        viewGroup.setAlpha(1.f);
+                        viewGroup.startAnimation(translateAnimation);
+                    }
+                });
+            }
+        }).start();
+
+
+        findViewById(R.id.app_icon).setOnClickListener(new View.OnClickListener() {
+            boolean isAnimating = false;
+
+            @Override
+            public void onClick(View v) {
+                if (isAnimating)
+                    return;
+                if (clicks == 10) {
+                    Animation animation = new RotateAnimation(0.f, 360.f,
+                            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    animation.setDuration(1000);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            isAnimating = true;
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            isAnimating = false;
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+                    v.startAnimation(animation);
+                    clicks = 0;
+                } else {
+                    clicks++;
+                    Animation animation = new ScaleAnimation(1.05f, 1.f, 1.05f, 1.f,
+                            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    animation.setDuration(300);
+                    v.startAnimation(animation);
+                }
+            }
+        });
     }
 
     public void onContactClick(View view) {
@@ -22,5 +93,7 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     public void onGithubClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JakubekWeg/SP2DobczyceApp/"));
+        startActivity(intent);
     }
 }

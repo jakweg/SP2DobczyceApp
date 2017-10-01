@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_margin="6dp"
     android:layout_height="wrap_content">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +14,8 @@
         android:textColor="#FFF"
         android:id="@+id/title"
         android:background="@drawable/widget_background"
-        android:text="@string/lesson_plan"/>
+        android:text="@string/lesson_plan" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +24,7 @@
         android:background="@color/colorPrimary"
         android:gravity="center_horizontal"
         android:textColor="#FFF"
-        android:id="@+id/day_name"/>
+        android:id="@+id/day_name" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -35,6 +37,7 @@
             android:background="@color/background"
             android:id="@+id/lesson_time_layout"
             android:orientation="vertical" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

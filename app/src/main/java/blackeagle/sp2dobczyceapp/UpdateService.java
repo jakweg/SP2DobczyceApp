@@ -18,7 +18,8 @@ import java.util.Arrays;
 public class UpdateService extends Service {
 
     private static UpdateService thisService = null;
-    static void startService(Context context){
+
+    static void startService(Context context) {
         Settings.loadSettings(context);
         if (!Settings.isReady)
             return;
@@ -29,7 +30,7 @@ public class UpdateService extends Service {
         context.startService(new Intent(context, UpdateService.class));
     }
 
-    static void stopService(){
+    static void stopService() {
         if (thisService == null)
             return;
         thisService.stopSelf();
@@ -49,7 +50,7 @@ public class UpdateService extends Service {
         return START_STICKY;
     }
 
-    private void startWaitingForNetwork(){
+    private void startWaitingForNetwork() {
         networkListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -137,7 +138,7 @@ public class UpdateService extends Service {
             manager.notify(Settings.NOTIFICATION_ID_UPDATE_RESULT, notification);
 
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;

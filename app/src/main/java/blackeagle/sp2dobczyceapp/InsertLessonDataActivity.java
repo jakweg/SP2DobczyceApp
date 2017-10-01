@@ -38,7 +38,7 @@ public class InsertLessonDataActivity extends Activity {
         LessonPlanManager.Lesson lesson = (LessonPlanManager.Lesson) extras.getSerializable("lesson");
         thisDay = extras.getInt("day", -1);
         thisLesson = extras.getInt("lessonNumber", -1);
-        if (lesson == null || thisDay == -1 || thisLesson == -1){
+        if (lesson == null || thisDay == -1 || thisLesson == -1) {
             finish();
             return;
         }
@@ -60,7 +60,7 @@ public class InsertLessonDataActivity extends Activity {
         classroomView1 = ((EditText) findViewById(R.id.textViewClassroom1));
         classroomView2 = ((EditText) findViewById(R.id.textViewClassroom2));
 
-        if (lesson.isGroupLesson){
+        if (lesson.isGroupLesson) {
             nameView1.setText(lesson.groupName[0]);
             nameView2.setText(lesson.groupName[1]);
             teacherView1.setText(lesson.groupTeacher[0]);
@@ -77,23 +77,23 @@ public class InsertLessonDataActivity extends Activity {
 
     }
 
-    private void disableOrientationChanges(){
+    private void disableOrientationChanges() {
         int deviceRotation = getWindowManager().getDefaultDisplay().getRotation();
 
-        if(deviceRotation == Surface.ROTATION_0)
+        if (deviceRotation == Surface.ROTATION_0)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        else if(deviceRotation == Surface.ROTATION_180)
+        else if (deviceRotation == Surface.ROTATION_180)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        else if(deviceRotation == Surface.ROTATION_90)
+        else if (deviceRotation == Surface.ROTATION_90)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else if(deviceRotation == Surface.ROTATION_270)
+        else if (deviceRotation == Surface.ROTATION_270)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
     }
 
     public void onSaveClick(View view) {
         LessonPlanManager.Lesson lesson = new LessonPlanManager.Lesson();
         lesson.isEmpty = false;
-        if (groupSwitch.isChecked()){
+        if (groupSwitch.isChecked()) {
             lesson.isGroupLesson = true;
             lesson.groupName[0] = nameView1.getText().toString();
             lesson.groupName[1] = nameView2.getText().toString();

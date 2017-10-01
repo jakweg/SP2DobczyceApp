@@ -24,12 +24,12 @@ class UpdateManager {
         Result result = new Result();
         result.updated = false;
         result.isFromFile = true;
-        try{
+        try {
             File file = new File(context.getApplicationInfo().dataDir + "/substitute");
             Scanner scanner = new Scanner(file);
 
-            while (scanner.hasNextLine()){
-                String s = scanner.nextLine().replaceAll("\\n","\n");
+            while (scanner.hasNextLine()) {
+                String s = scanner.nextLine().replaceAll("\\n", "\n");
                 result.days.add(s);
             }
 
@@ -157,12 +157,12 @@ class UpdateManager {
     @Nullable
     private static String normalizeSection(String str) {
         StringBuilder builder = new StringBuilder();
-        final char[] chars = str.replaceAll("<br  />", "<br />").replaceAll("\t- ", "-").replaceAll("\t"," ").toCharArray();
+        final char[] chars = str.replaceAll("<br  />", "<br />").replaceAll("\t- ", "-").replaceAll("\t", " ").toCharArray();
         boolean isSpace = false;
         boolean wasText = false;
         for (char c : chars) {
-            if(c == ' ') {
-                if (!isSpace){
+            if (c == ' ') {
+                if (!isSpace) {
                     builder.append(' ');
                     isSpace = true;
                 }
@@ -184,12 +184,14 @@ class UpdateManager {
         int newCount = 0;
         int allNewsCount = 0;
         boolean hasChangedLuckyNumbers = false;
+
         boolean areNewsForUser() {
             return newCount != 0 || (hasChangedLuckyNumbers && Settings.isUserLuckyNumber());
         }
+
         List<String> days = new ArrayList<>();
 
-        void createViews (Context context, LinearLayout parent, int size) {
+        void createViews(Context context, LinearLayout parent, int size) {
             boolean darkMode = Settings.applyNowDarkTheme();
             for (String day : days) {
                 Section.createSection(context, day, size, parent, darkMode);
@@ -197,7 +199,7 @@ class UpdateManager {
             parent.addView(Section.createSeparator(context));
         }
 
-        void createLuckyNumberView(Context context, LinearLayout parent, int size){
+        void createLuckyNumberView(Context context, LinearLayout parent, int size) {
             if (Settings.luckyNumber1 == 0 || Settings.luckyNumber2 == 0)
                 return;
             parent.addView(Section.createSeparator(context));
@@ -206,13 +208,13 @@ class UpdateManager {
             layout.setOrientation(LinearLayout.VERTICAL);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     (int) (size * 0.94f), LinearLayout.LayoutParams.WRAP_CONTENT);
-            int margin = (int)context.getResources().getDimension(R.dimen.sectionMargin);
+            int margin = (int) context.getResources().getDimension(R.dimen.sectionMargin);
             params.setMargins(0, margin, 0, margin);
             layout.setLayoutParams(params);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 layout.setElevation(margin * 3 / 5);
             layout.setBackgroundColor(Settings.getColor(context,
-                    darkMode ? R.color.sectionBackgroundDark: R.color.sectionBackground));
+                    darkMode ? R.color.sectionBackgroundDark : R.color.sectionBackground));
 
             TextView textView = new TextView(context);
             textView.setLayoutParams(new LinearLayout.LayoutParams(
@@ -228,7 +230,7 @@ class UpdateManager {
     }
 
     private static void saveLastUserSubstitutes(Context context, ArrayList<String> list) {
-        try{
+        try {
             PrintWriter out = new PrintWriter(context.getApplicationInfo().dataDir + "/userSubstitute");
             for (String s : list) {
                 out.println(s);
@@ -245,12 +247,12 @@ class UpdateManager {
             File file = new File(context.getApplicationInfo().dataDir + "/userSubstitute");
             Scanner in = new Scanner(file);
 
-            while (in.hasNextLine()){
+            while (in.hasNextLine()) {
                 list.add(in.nextLine());
             }
 
             in.close();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
@@ -286,7 +288,7 @@ class UpdateManager {
                     return true;//wf np: "3b-e coś"
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;

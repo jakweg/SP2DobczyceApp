@@ -26,7 +26,9 @@ class Section {
     private int maxHeight;
     private boolean isAnimating = false;
     private boolean isShown = true;
-    private Section(){ }
+
+    private Section() {
+    }
 
     @SuppressLint("SetTextI18n")
     static Section createSection(Context context, String section, int size, final LinearLayout layout, boolean darkTheme) {
@@ -38,10 +40,10 @@ class Section {
         //returnValue.setLayoutParams(new LinearLayout.LayoutParams(
         //        (int)((float)size.x * 0.93f), LinearLayout.LayoutParams.WRAP_CONTENT));
         returnValue.setLayoutParams(new RelativeLayout.LayoutParams(
-                (int)(size * 0.94f), ViewGroup.LayoutParams.WRAP_CONTENT));
+                (int) (size * 0.94f), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         returnValue.setBackgroundColor(Settings.getColor(context,
-                darkTheme? R.color.sectionBackgroundDark: R.color.sectionBackground));
+                darkTheme ? R.color.sectionBackgroundDark : R.color.sectionBackground));
         returnValue.measure(0, 0);
 
         StringBuilder builder = new StringBuilder();
@@ -50,8 +52,8 @@ class Section {
         if (lines.length == 1) {
             lines = section.split("<br />");
         }
-        for (String line :lines) {
-            if (UpdateManager.containsSubstituteForUser(line)){
+        for (String line : lines) {
+            if (UpdateManager.containsSubstituteForUser(line)) {
                 builder.append("<b>");
                 builder.append(line);
                 builder.append("</b>");
@@ -62,16 +64,16 @@ class Section {
             builder.append("<br/>");
         }
 
-        String date = getDate(lines.length>0?lines[0]:null);
-        String dayName = lines.length>1?lines[1]:"";
+        String date = getDate(lines.length > 0 ? lines[0] : null);
+        String dayName = lines.length > 1 ? lines[1] : "";
 
         final TextView titleView = (TextView) returnValue.findViewById(R.id.title);
 
-        if (isDayName(dayName) && date != null){
+        if (isDayName(dayName) && date != null) {
             titleView.setText(
                     String.format("%s (%s)\n%s",
-                    dayName, date, UpdateManager.getUpdateInfo(count)));
-        } else{
+                            dayName, date, UpdateManager.getUpdateInfo(count)));
+        } else {
             titleView.setText("Informacja\n" + UpdateManager.getUpdateInfo(count));
         }
 
@@ -94,8 +96,8 @@ class Section {
         });
 
 
-        final ImageView image = (ImageView)returnValue.findViewById(R.id.image);
-        image.setBackground(getDyedDrawable(context ,R.drawable.ic_expand, darkTheme));
+        final ImageView image = (ImageView) returnValue.findViewById(R.id.image);
+        image.setBackground(getDyedDrawable(context, R.drawable.ic_expand, darkTheme));
         image.setRotation(thisSection.isShown ? 180.f : 0);
         image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,12 +105,12 @@ class Section {
                 if (thisSection.isAnimating)
                     return;
                 Animation animation;
-                if (thisSection.isShown){
+                if (thisSection.isShown) {
                     thisSection.isShown = false;
                     animation = new Animation() {
                         @Override
                         protected void applyTransformation(float interpolatedTime, Transformation t) {
-                            contentView.setHeight((int)( (1.f - interpolatedTime) * thisSection.maxHeight));
+                            contentView.setHeight((int) ((1.f - interpolatedTime) * thisSection.maxHeight));
                             image.setRotation(180.f - interpolatedTime * 180.f);
                             contentView.requestLayout();
                         }
@@ -123,7 +125,7 @@ class Section {
                     animation = new Animation() {
                         @Override
                         protected void applyTransformation(float interpolatedTime, Transformation t) {
-                            contentView.setHeight((int)(interpolatedTime * thisSection.maxHeight));
+                            contentView.setHeight((int) (interpolatedTime * thisSection.maxHeight));
                             image.setRotation(interpolatedTime * 180.f);
                             contentView.requestLayout();
                         }
@@ -161,7 +163,7 @@ class Section {
         return thisSection;
     }
 
-    private static Drawable getDyedDrawable(Context context, @DrawableRes int id, boolean isDarkTheme){
+    private static Drawable getDyedDrawable(Context context, @DrawableRes int id, boolean isDarkTheme) {
         Drawable drawable = ContextCompat.getDrawable(context, id);
         drawable.setColorFilter(new PorterDuffColorFilter(
                 Settings.getColor(context, isDarkTheme ? R.color.white : R.color.black),
@@ -170,7 +172,7 @@ class Section {
     }
 
     @Nullable
-    private static String getDate(String date){
+    private static String getDate(String date) {
         try {
             date = date.substring(0, date.length() - 2);
             int day = Integer.valueOf(date.substring(0, date.indexOf('.')));
@@ -196,12 +198,12 @@ class Section {
                     //return String.format("%s.%s.%sr.", day, month, year);
                     return date;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    private static boolean isDayName(String day){
+    private static boolean isDayName(String day) {
         day = day.toLowerCase();
         return day.equals("poniedziałek")
                 || day.equals("wtorek")
@@ -210,13 +212,13 @@ class Section {
                 || day.equals("piątek");
     }
 
-    static View createSeparator(Context context){
+    static View createSeparator(Context context) {
         View view = new View(context);
         //noinspection deprecation
         view.setBackgroundColor(context.getResources().getColor(R.color.separatorColor));
         view.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                (int)context.getResources().getDimension(R.dimen.separator_height)));
+                (int) context.getResources().getDimension(R.dimen.separator_height)));
 
         return view;
     }

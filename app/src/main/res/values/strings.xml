@@ -50,8 +50,8 @@
     <string name="edit_lesson_plan">Edytuj plan lekcji</string>
     <string name="insert_data">Wprowadź dane</string>
     <string name="save">Zapisz</string>
-    <string name="about_github">Ten projekt jest dostępny na Githubie w pełni OpenSource</string>
+    <string name="about_github">Ten projekt jest dostępny na GitHub\'ie</string>
     <string name="show_source_code">Wyświetl kod</string>
-    <string name="about_githubv2">To oznacza, że możesz dowiedzieć się jak działa ta aplikacja a nawet możesz zamieścić w niej własne zmiany!</string>
+    <string name="about_githubv2">Jest więc OpenSource a to oznacza, że możesz dowiedzieć się jak działa ta aplikacja a nawet możesz zamieścić w niej własne zmiany!</string>
 
 </resources>

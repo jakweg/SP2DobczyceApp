@@ -56,37 +56,35 @@ public class WelcomeActivity extends AppCompatActivity {
         if (Settings.isOnline(this)) {
             setNextPage(PAGE_LOADING);
             startLoadingList();
-        }
-        else
+        } else
             setNextPage(PAGE_NO_INTERNET);
     }
 
-    private void disableOrientationChanges(){
+    private void disableOrientationChanges() {
         int deviceRotation = getWindowManager().getDefaultDisplay().getRotation();
 
-        if(deviceRotation == Surface.ROTATION_0)
+        if (deviceRotation == Surface.ROTATION_0)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        else if(deviceRotation == Surface.ROTATION_180)
+        else if (deviceRotation == Surface.ROTATION_180)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        else if(deviceRotation == Surface.ROTATION_90)
+        else if (deviceRotation == Surface.ROTATION_90)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else if(deviceRotation == Surface.ROTATION_270)
+        else if (deviceRotation == Surface.ROTATION_270)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
     }
 
-    private void startLoadingList(){
+    private void startLoadingList() {
         Thread downloadThread;
-        if (hasDownloadedLists){
+        if (hasDownloadedLists) {
             downloadThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     isDownloading = true;
-                    if(LessonPlanManager.downloadAllPlans(WelcomeActivity.this)) {
-                        if (currentPage == PAGE_LOADING){
+                    if (LessonPlanManager.downloadAllPlans(WelcomeActivity.this)) {
+                        if (currentPage == PAGE_LOADING) {
                             isReadyToFinish = true;
                         }
-                    }
-                    else {
+                    } else {
                         setNextPage(PAGE_NO_INTERNET);
                     }
                     isDownloading = false;
@@ -97,7 +95,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     isDownloading = true;
-                    if(LessonPlanManager.downloadLists()) {
+                    if (LessonPlanManager.downloadLists()) {
                         hasDownloadedLists = true;
                         setNextPage(PAGE_CHOOSE_CLASS);
 
@@ -107,8 +105,7 @@ public class WelcomeActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         startLoadingList();
-                    }
-                    else {
+                    } else {
                         hasDownloadedLists = false;
                         setNextPage(PAGE_NO_INTERNET);
                     }
@@ -228,7 +225,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
                         ArrayList<String> list = new ArrayList<>(30);
                         for (int i = 0; i < 30; i++)
-                            list.add( String.valueOf(i + 1));
+                            list.add(String.valueOf(i + 1));
 
 
                         ArrayAdapter<String> spinnerArrayAdapter =
@@ -261,7 +258,7 @@ public class WelcomeActivity extends AppCompatActivity {
                                 Settings.isTeacher = isTeacher;
                                 Settings.isReady = true;
                                 Settings.saveSettings(WelcomeActivity.this);
-                                if(isDownloading) {
+                                if (isDownloading) {
                                     setNextPage(PAGE_LOADING);
                                 } else {
                                     UpdateService.startService(WelcomeActivity.this);

@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -28,6 +29,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
 
     String lastClass;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
     }
 
     Intent returnData = new Intent();
+
     @Override
     public void onClassChange() {
         LessonFinishService.stopService();
@@ -57,6 +60,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
     }
 
     private boolean isDarkTheme;
+
     @Override
     public void onThemeChange() {
         returnData.putExtra("changedTheme", true);
@@ -80,14 +84,16 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
         theme.applyStyle(isDarkTheme ? R.style.DarkThemeSettings : R.style.AppThemeSettings, true);
     }
 
-    public static class MyPreferenceFragment extends PreferenceFragment{
+    public static class MyPreferenceFragment extends PreferenceFragment {
 
         Context context = null;
         Settings.OnSettingsChangeListener changeListener = null;
 
         boolean isDarkTheme;
-        @ColorInt int blackIconColor;
-        @ColorInt int whiteIconColor;
+        @ColorInt
+        int blackIconColor;
+        @ColorInt
+        int whiteIconColor;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,7 +123,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (newValue instanceof String)
-                        Settings.className = (String)newValue;
+                        Settings.className = (String) newValue;
                     else {
                         Settings.isTeacher = (boolean) newValue;
                         Settings.className = Settings.isTeacher ?
@@ -171,14 +177,14 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     try {
-                        int number = Integer.valueOf((String)newValue);
-                        if (number == 0){
+                        int number = Integer.valueOf((String) newValue);
+                        if (number == 0) {
                             Toast.makeText(context, "Usunięto szczęśliwy numerek", Toast.LENGTH_SHORT).show();
                             return true;
                         }
-                        if (number <= 30 )
+                        if (number <= 30)
                             return true;
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         //empty
                     }
                     Toast.makeText(context, "Nieprawidłowa liczba", Toast.LENGTH_SHORT).show();
@@ -192,8 +198,8 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             screen.addPreference(category);
 
             ListPreference darkThemeList = new ListPreference(context);
-            CharSequence[] darkThemeEntries = new CharSequence[] { "nigdy", "tylko w nocy", "zawsze"};
-            CharSequence[] darkThemeValues = new CharSequence[] { "0", "1", "2"};
+            CharSequence[] darkThemeEntries = new CharSequence[]{"nigdy", "tylko w nocy", "zawsze"};
+            CharSequence[] darkThemeValues = new CharSequence[]{"0", "1", "2"};
             darkThemeList.setEntries(darkThemeEntries);
             darkThemeList.setEntryValues(darkThemeValues);
             darkThemeList.setIcon(getDyedDrawable(R.drawable.ic_style));
@@ -208,7 +214,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                         Settings.darkModeState = Integer.valueOf((String) newValue);
                         if (changeListener != null)
                             changeListener.onThemeChange();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     return true;
@@ -230,7 +236,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             allowWorkInBgCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (Settings.canWorkInBackground = (boolean)newValue)
+                    if (Settings.canWorkInBackground = (boolean) newValue)
                         UpdateService.startService(context);
                     else
                         UpdateService.stopService();
@@ -261,7 +267,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             showFinishTimeCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (Settings.showFinishTimeNotification = (boolean)newValue)
+                    if (Settings.showFinishTimeNotification = (boolean) newValue)
                         LessonFinishService.startService(context);
                     else
                         LessonFinishService.stopService();
@@ -280,10 +286,10 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     try {
-                        int number = Integer.valueOf((String)newValue);
+                        int number = Integer.valueOf((String) newValue);
                         if (number <= 60 && number >= -60)
                             return true;
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         //empty
                     }
                     Toast.makeText(context, "Nieprawidłowa liczba", Toast.LENGTH_SHORT).show();
@@ -293,10 +299,28 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
             category.addPreference(delayEditTextPreference);
 
+            category = new PreferenceCategory(context);
+            category.setTitle("Github");
+
+            Preference gitPreference = new Preference(context);
+            gitPreference.setTitle("Otwórz Github");
+            gitPreference.setSummary(R.string.about_github);
+            gitPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JakubekWeg/SP2DobczyceApp/"));
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
+            screen.addPreference(category);
+            category.addPreference(gitPreference);
+
             setPreferenceScreen(screen);
         }
 
-        private Drawable getDyedDrawable(@DrawableRes int id){
+        private Drawable getDyedDrawable(@DrawableRes int id) {
             Drawable drawable = ContextCompat.getDrawable(context, id);
             drawable.setColorFilter(new PorterDuffColorFilter(isDarkTheme ? blackIconColor : whiteIconColor,
                     PorterDuff.Mode.SRC_IN));

@@ -59,7 +59,7 @@ public class LessonPlanActivity extends AppCompatActivity {
         if (savedInstanceState == null)
             savedInstanceState = getIntent().getExtras();
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             if (Settings.isClassSelected())
                 lessonPlanName = Settings.getClassOrTeacherName();
             else
@@ -73,7 +73,7 @@ public class LessonPlanActivity extends AppCompatActivity {
 
         createTabbedView();
 
-        final LinearLayout lessonTimeLayout = (LinearLayout)findViewById(R.id.lesson_time_layout);
+        final LinearLayout lessonTimeLayout = (LinearLayout) findViewById(R.id.lesson_time_layout);
         lessonTimeLayout.setBackgroundColor(Settings.getColor(this,
                 isDarkTheme ? R.color.backgroundDark : R.color.background));
         LessonTimeManager.makeLayout(this, lessonTimeLayout);
@@ -105,7 +105,7 @@ public class LessonPlanActivity extends AppCompatActivity {
                                             }).show();
                                 else
                                     Toast.makeText(LessonPlanActivity.this, R.string.no_class_selected, Toast.LENGTH_LONG).show();
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 //empty
                             }
                         }
@@ -116,6 +116,7 @@ public class LessonPlanActivity extends AppCompatActivity {
     }
 
     ViewPager mViewPager;
+
     @SuppressLint("SwitchIntDef")
     void createTabbedView() {
         String filename = getApplicationInfo().dataDir
@@ -123,7 +124,7 @@ public class LessonPlanActivity extends AppCompatActivity {
                 + lessonPlanName;
 
         thisPlan = LessonPlanManager.getPlan(filename);
-        if (thisPlan == null){
+        if (thisPlan == null) {
             Toast.makeText(this, R.string.cannot_load_lesson_plan, Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -222,7 +223,7 @@ public class LessonPlanActivity extends AppCompatActivity {
                             Uri.parse(thisPlan.getLink()));
                     startActivity(browserIntent);
                     return true;
-                } catch (Exception e){
+                } catch (Exception e) {
                     return false;
                 }
             }
@@ -258,7 +259,7 @@ public class LessonPlanActivity extends AppCompatActivity {
         if (thisPlan != null)
             item = menu.add(thisPlan.isTeacherPlan() ? R.string.show_class_name : R.string.show_teacher_name);
         else
-             item = menu.add(Settings.isTeacher ? R.string.show_class_name : R.string.show_teacher_name);
+            item = menu.add(Settings.isTeacher ? R.string.show_class_name : R.string.show_teacher_name);
         item.setCheckable(true);
         item.setChecked((Settings.lessonPlanRule & LessonPlanManager.LessonPlan.RULE_SHOW_TEACHER) != 0);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -303,9 +304,9 @@ public class LessonPlanActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 final String title = thisPlan.getName();
-                if (!Settings.isClassSelected()){
+                if (!Settings.isClassSelected()) {
                     Settings.createShortcut(getApplicationContext(), "Plan lekcji " + thisPlan.getInitials(),
-                            thisPlan.getName(),  thisPlan.isTeacherPlan());
+                            thisPlan.getName(), thisPlan.isTeacherPlan());
                     Toast.makeText(LessonPlanActivity.this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
                 } else if (title.equals(Settings.getClassOrTeacherName())) {
                     Settings.createShortcut(getApplicationContext(), "Plan lekcji", null,
@@ -330,7 +331,7 @@ public class LessonPlanActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             Settings.createShortcut(getApplicationContext(), "Plan lekcji " + thisPlan.getInitials(),
-                                    thisPlan.getName(),  thisPlan.isTeacherPlan());
+                                    thisPlan.getName(), thisPlan.isTeacherPlan());
                             Toast.makeText(LessonPlanActivity.this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -349,7 +350,7 @@ public class LessonPlanActivity extends AppCompatActivity {
         if (id >= 200) {
             restartPlan(item.getTitle().toString(), true);
             return true;
-        } else if (id >= 100){
+        } else if (id >= 100) {
             restartPlan(item.getTitle().toString(), false);
             return true;
         }
@@ -387,7 +388,7 @@ public class LessonPlanActivity extends AppCompatActivity {
 
             ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(inflater.getContext(),
                     Settings.applyNowDarkTheme() ? R.style.DarkTheme : R.style.AppTheme);
-            for (int i = 0;i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 viewGroup.addView(createLessonView(contextThemeWrapper, i,
                         Settings.lessonPlanRule));
             }
@@ -433,12 +434,17 @@ public class LessonPlanActivity extends AppCompatActivity {
                 case 3: return "Czwartek";
                 case 4: return "Piątek";
             }*/
-            switch (position){
-                case 0: return "Pon";
-                case 1: return "Wt";
-                case 2: return "Śr";
-                case 3: return "Cz";
-                case 4: return "Pt";
+            switch (position) {
+                case 0:
+                    return "Pon";
+                case 1:
+                    return "Wt";
+                case 2:
+                    return "Śr";
+                case 3:
+                    return "Cz";
+                case 4:
+                    return "Pt";
             }
             return null;
         }

@@ -13,7 +13,7 @@ import java.util.Calendar;
 public class LessonFinishService extends Service {
     private static LessonFinishService thisService = null;
 
-    static void startService(Context context){
+    static void startService(Context context) {
         Settings.loadSettings(context);
         if (!Settings.isReady)
             return;
@@ -24,7 +24,7 @@ public class LessonFinishService extends Service {
         context.startService(new Intent(context, LessonFinishService.class));
     }
 
-    static void stopService(){
+    static void stopService() {
         if (thisService == null)
             return;
         thisService.stopSelf();
@@ -51,7 +51,7 @@ public class LessonFinishService extends Service {
         return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
     }
 
-    private static boolean isWeekend(){
+    private static boolean isWeekend() {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         return day == Calendar.SATURDAY || day == Calendar.SUNDAY;
     }
@@ -79,7 +79,7 @@ public class LessonFinishService extends Service {
             }
         } catch (InterruptedException ie) {
             throw ie;
-        } catch (Exception e){
+        } catch (Exception e) {
             //empty
         }
     }
@@ -95,10 +95,10 @@ public class LessonFinishService extends Service {
                         runSchoolLooper();
                     }
                     stopService();
-                } catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     //empty
                     stopService();
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -128,13 +128,13 @@ public class LessonFinishService extends Service {
         cancelNotification();
     }
 
-    private void cancelNotification(){
+    private void cancelNotification() {
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
                 .cancel(Settings.NOTIFICATION_ID_LESSON_FINISH);
     }
 
     private void updateNotification() {
-        if (notification == null){
+        if (notification == null) {
             builder = new Notification.Builder(this);
             builder.setSmallIcon(R.drawable.ic_school);
             builder.setPriority(Notification.PRIORITY_HIGH);
@@ -145,11 +145,11 @@ public class LessonFinishService extends Service {
             }
         }
 
-        switch (lessonState.thisState){
+        switch (lessonState.thisState) {
             case LessonTimeManager.LESSON:
                 builder.setContentTitle("Aktualnie trwa " + String.valueOf(lessonState.lessonNumber + 1) + " lekcja");
                 builder.setContentText(getLeftTimeString());
-            break;
+                break;
             case LessonTimeManager.BREAK:
                 builder.setContentTitle("Aktualnie trwa " + String.valueOf(lessonState.lessonNumber + 1) + " przerwa");
                 builder.setContentText(getLeftTimeString());
@@ -166,7 +166,7 @@ public class LessonFinishService extends Service {
                 .notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
     }
 
-    private String getLeftTimeString(){
+    private String getLeftTimeString() {
         int minute = timeToFinishLesson / 60;
         int second = timeToFinishLesson % 60;
 
@@ -185,9 +185,9 @@ public class LessonFinishService extends Service {
     /**
      * @return true if "jest 5 zastepstw", false if "sa 3 zastepstwa"
      */
-    private static boolean shouldUseSingleNoun(int number){
+    private static boolean shouldUseSingleNoun(int number) {
         return !((number > 20 && number % 10 > 1 && number % 10 < 5)
-                || ( number < 10 && number % 10 < 5));
+                || (number < 10 && number % 10 < 5));
     }
 
     @Override

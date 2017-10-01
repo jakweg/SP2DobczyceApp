@@ -214,11 +214,15 @@ abstract class LessonPlanManager {
             return link;
         }
 
-        boolean isTeacherPlan() {return isTeacher; }
+        boolean isTeacherPlan() {
+            return isTeacher;
+        }
 
-        String getName(){ return name; }
+        String getName() {
+            return name;
+        }
 
-        public boolean isEmpty(int day, int lesson){
+        public boolean isEmpty(int day, int lesson) {
             Lesson l = getLesson(day, lesson);
             return l == null || l.isEmpty;
         }
@@ -267,7 +271,7 @@ abstract class LessonPlanManager {
             return builder.toString();
         }
 
-        public void setLesson(int day, int lesson,@Nullable Lesson l) {
+        public void setLesson(int day, int lesson, @Nullable Lesson l) {
             plan[day][lesson] = l;
         }
 
@@ -275,7 +279,7 @@ abstract class LessonPlanManager {
         public Lesson getLesson(int day, int lesson) {
             try {
                 return plan[day][lesson];
-            } catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
@@ -356,7 +360,7 @@ abstract class LessonPlanManager {
                         lesson.teacher = "";
                         lesson.classroom = "";
                     }
-                } else if(visibleText.size() == 4){
+                } else if (visibleText.size() == 4) {
                     lesson.name = visibleText.get(2);
                     lesson.teacher = visibleText.get(0) + visibleText.get(1);
                     lesson.classroom = visibleText.get(3);
@@ -604,7 +608,7 @@ abstract class LessonPlanManager {
     }
 
     @Nullable
-    static LessonPlan getDefaultPlan(Context context){
+    static LessonPlan getDefaultPlan(Context context) {
         if (!Settings.isClassSelected())
             return null;
         return getPlan(context.getApplicationInfo().dataDir
@@ -612,10 +616,10 @@ abstract class LessonPlanManager {
                 + Settings.className);
     }
 
-    static int[] getLessonsCount(Context context){
+    static int[] getLessonsCount(Context context) {
         LessonPlan plan = getDefaultPlan(context);
         if (plan == null)
-            return new int[] {8, 8, 8, 8, 8};
+            return new int[]{8, 8, 8, 8, 8};
 
         int[] ints = {8, 8, 8, 8, 8};
 

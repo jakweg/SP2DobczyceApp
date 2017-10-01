@@ -16,13 +16,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="DefaultDialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog" >
+    <style name="DefaultDialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="DarkDialogTheme" parent="android:Theme.Material.Dialog" tools:ignore="NewApi" >
+    <style name="DarkDialogTheme" parent="android:Theme.Material.Dialog" tools:ignore="NewApi">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -30,7 +30,7 @@
 
     <style name="DarkThemeSettings" parent="DarkTheme" />
 
-    <style name="AppThemeSettings" parent="AppTheme"/>
+    <style name="AppThemeSettings" parent="AppTheme" />
 
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:layout_gravity="center">
+
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -14,16 +15,18 @@
         android:gravity="center"
         android:layout_gravity="center"
         tools:ignore="ContentDescription"
-        android:id="@+id/image"/>
+        android:id="@+id/image" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:text="@string/done"/>
+        android:text="@string/done" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="15dp"
         android:text="@string/continue_text"
-        android:id="@+id/next_button"/>
+        android:id="@+id/next_button" />
 </LinearLayout>

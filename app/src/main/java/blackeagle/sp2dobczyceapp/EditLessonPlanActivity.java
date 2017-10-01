@@ -61,7 +61,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
         if (savedInstanceState == null)
             savedInstanceState = getIntent().getExtras();
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             if (Settings.isClassSelected())
                 lessonPlanName = Settings.getClassOrTeacherName();
             else
@@ -79,7 +79,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
                 + lessonPlanName;
 
         thisPlan = LessonPlanManager.getPlan(filename);
-        if (thisPlan == null){
+        if (thisPlan == null) {
             Toast.makeText(this, R.string.cannot_load_lesson_plan, Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -87,7 +87,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
         createTabbedView();
 
-        final LinearLayout lessonTimeLayout = (LinearLayout)findViewById(R.id.lesson_time_layout);
+        final LinearLayout lessonTimeLayout = (LinearLayout) findViewById(R.id.lesson_time_layout);
         lessonTimeLayout.setBackgroundColor(Settings.getColor(this,
                 isDarkTheme ? R.color.backgroundDark : R.color.background));
         LessonTimeManager.makeLayout(this, lessonTimeLayout);
@@ -108,7 +108,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
                                 Snackbar.make(lessonTimeLayout, "Dotknij lekcji aby ją edytować", BaseTransientBottomBar.LENGTH_SHORT).show();
                             else
                                 Toast.makeText(EditLessonPlanActivity.this, R.string.no_class_selected, Toast.LENGTH_LONG).show();
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             //empty
                         }
                     }
@@ -120,6 +120,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
     }
 
     ViewPager mViewPager;
+
     @SuppressLint("SwitchIntDef")
     void createTabbedView() {
         setTitle("Edycja planu " + thisPlan.getInitials());
@@ -178,16 +179,16 @@ public class EditLessonPlanActivity extends AppCompatActivity {
             mViewPager.setCurrentItem(currentPage);
     }
 
-    private void disableOrientationChanges(){
+    private void disableOrientationChanges() {
         int deviceRotation = getWindowManager().getDefaultDisplay().getRotation();
 
-        if(deviceRotation == Surface.ROTATION_0)
+        if (deviceRotation == Surface.ROTATION_0)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        else if(deviceRotation == Surface.ROTATION_180)
+        else if (deviceRotation == Surface.ROTATION_180)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        else if(deviceRotation == Surface.ROTATION_90)
+        else if (deviceRotation == Surface.ROTATION_90)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else if(deviceRotation == Surface.ROTATION_270)
+        else if (deviceRotation == Surface.ROTATION_270)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
     }
 
@@ -209,12 +210,12 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-                if (resultCode == RESULT_OK && data != null) {
-                    thisPlan.setLesson(data.getExtras().getInt("day", -1),
-                            data.getExtras().getInt("lessonNumber", -1),
-                            (LessonPlanManager.Lesson) data.getExtras().getSerializable("lesson"));
-                    createTabbedView();
-                }
+        if (resultCode == RESULT_OK && data != null) {
+            thisPlan.setLesson(data.getExtras().getInt("day", -1),
+                    data.getExtras().getInt("lessonNumber", -1),
+                    (LessonPlanManager.Lesson) data.getExtras().getSerializable("lesson"));
+            createTabbedView();
+        }
     }
 
     private void saveAndQuit() {
@@ -265,7 +266,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
             ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(inflater.getContext(),
                     Settings.applyNowDarkTheme() ? R.style.DarkTheme : R.style.AppTheme);
-            for (int i = 0;i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 viewGroup.addView(createLessonView(contextThemeWrapper, i,
                         0xffffffff));
             }
@@ -316,12 +317,17 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position){
-                case 0: return "Pon";
-                case 1: return "Wt";
-                case 2: return "Śr";
-                case 3: return "Cz";
-                case 4: return "Pt";
+            switch (position) {
+                case 0:
+                    return "Pon";
+                case 1:
+                    return "Wt";
+                case 2:
+                    return "Śr";
+                case 3:
+                    return "Cz";
+                case 4:
+                    return "Pt";
             }
             return null;
         }

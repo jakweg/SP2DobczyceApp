@@ -15,6 +15,7 @@ import java.util.Calendar;
 abstract class Settings {
     interface OnSettingsChangeListener {
         void onClassChange();
+
         void onThemeChange();
     }
 
@@ -29,15 +30,21 @@ abstract class Settings {
     static int usersNumber = -1;
     static int luckyNumber1 = -1;
     static int luckyNumber2 = -1;
+
     static boolean isUserLuckyNumber() {
         return isNumberSelected() &&
-                (Settings.luckyNumber1 == Settings.usersNumber || Settings.luckyNumber2 == Settings.usersNumber); }
-    static boolean isNumberSelected() { return usersNumber != -1; }
-    static boolean isClassSelected(){
+                (Settings.luckyNumber1 == Settings.usersNumber || Settings.luckyNumber2 == Settings.usersNumber);
+    }
+
+    static boolean isNumberSelected() {
+        return usersNumber != -1;
+    }
+
+    static boolean isClassSelected() {
         return !"".equals(className);
     }
 
-    static byte lessonPlanRule = (byte)0x0FFFFF;
+    static byte lessonPlanRule = (byte) 0x0FFFFF;
 
     static int darkModeState;
     static final int DARK_MODE_ALWAYS = 2;
@@ -48,7 +55,7 @@ abstract class Settings {
     static final int NOTIFICATION_ID_LESSON_FINISH = 2;
 
     static boolean applyNowDarkTheme() {
-        switch (darkModeState){
+        switch (darkModeState) {
             case DARK_MODE_ALWAYS:
                 return true;
             case DARK_MODE_NEVER:
@@ -66,14 +73,16 @@ abstract class Settings {
         return pos < 0 ? className : className.substring(className.indexOf('.') + 1, pos);
     }
 
-    static String getClassOrTeacherName(){
+    static String getClassOrTeacherName() {
         return className;
     }
 
     private static boolean isLoaded = false;
+
     static void loadSettings(Context context) {
         loadSettings(context, false);
     }
+
     static void loadSettings(Context context, boolean force) {
         if (!force && isLoaded)
             return;
@@ -104,7 +113,7 @@ abstract class Settings {
         LessonFinishService.startService(context);
     }
 
-    static void saveSettings(Context context){
+    static void saveSettings(Context context) {
         try {
             SharedPreferences preferences =
                     context.getSharedPreferences("settings", Context.MODE_PRIVATE);
@@ -112,13 +121,13 @@ abstract class Settings {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean("isReady", isReady);
             editor.putBoolean("isTeacher", isTeacher);
-            editor.putString("className",className);
-            editor.putString("darkTheme",  String.valueOf(darkModeState));//string!!!
+            editor.putString("className", className);
+            editor.putString("darkTheme", String.valueOf(darkModeState));//string!!!
             editor.putInt("lessonPlanRule", lessonPlanRule);
             editor.putBoolean("canNotify", canNotify);
             editor.putBoolean("canWorkInBackground", canWorkInBackground);
             editor.putBoolean("showFinishTimeNotification", showFinishTimeNotification);
-            editor.putString("finishTimeDelay",String.valueOf(finishTimeDelay));
+            editor.putString("finishTimeDelay", String.valueOf(finishTimeDelay));
             editor.putString("usersNumber", String.valueOf(usersNumber));
             editor.putInt("luckyNumber1", luckyNumber1);
             editor.putInt("luckyNumber2", luckyNumber2);
@@ -127,21 +136,21 @@ abstract class Settings {
 
             LessonPlanManager.saveClassesData(context);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             //empty
         }
     }
 
     static boolean isOnline(Context context) {
         try {
-            ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             return cm.getActiveNetworkInfo().isConnectedOrConnecting();
         } catch (Exception e) {
             return false;
         }
     }
 
-    static boolean containsDigit(String str){
+    static boolean containsDigit(String str) {
         for (char c : str.toCharArray()) {
             if (Character.isDigit(c))
                 return true;
@@ -150,7 +159,7 @@ abstract class Settings {
     }
 
     @ColorInt
-    static int getColor(Context context, @ColorRes int res){
+    static int getColor(Context context, @ColorRes int res) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return context.getColor(res);
         } else {
@@ -178,7 +187,7 @@ abstract class Settings {
             //addIntent.putExtra("duplicate", false);
             addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
             applicationContext.sendBroadcast(addIntent);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        if (intent != null && intent.getBooleanExtra("openSettings", false)){
+        if (intent != null && intent.getBooleanExtra("openSettings", false)) {
             startActivityForResult(new Intent(this, SettingsActivity.class), OPEN_SETTINGS_ID);
         }
     }
@@ -123,27 +123,27 @@ public class MainActivity extends AppCompatActivity {
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
                 return true;
             }
-        })
+        });
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case OPEN_SETTINGS_ID:
-                if (data != null ){
-                   if(data.getBooleanExtra("changedClass", false)) {
-                       refreshResult.isFromFile = true;
-                       createViewByResult();
-                   }
-                   if (data.getBooleanExtra("changedTheme", false)){
-                       finish();
-                       startActivity(getIntent());
-                   }
+                if (data != null) {
+                    if (data.getBooleanExtra("changedClass", false)) {
+                        refreshResult.isFromFile = true;
+                        createViewByResult();
+                    }
+                    if (data.getBooleanExtra("changedTheme", false)) {
+                        finish();
+                        startActivity(getIntent());
+                    }
                 }
                 break;
             default:
@@ -175,11 +175,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void showSnackbarMessage(@StringRes final int id){
+    void showSnackbarMessage(@StringRes final int id) {
         showSnackbarMessage(getString(id));
     }
 
-    void showSnackbarMessage(final String msg){
+    void showSnackbarMessage(final String msg) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             Snackbar.make(mainLayout, msg, BaseTransientBottomBar.LENGTH_SHORT).show();
         else
@@ -215,9 +215,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     //noinspection ConstantConditions
                     getSupportActionBar().setTitle(refreshResult.allNewsCount > 0 ? ("Zastępstwa (" + String.valueOf(refreshResult.allNewsCount) + ")")
-                    :"Zastępstwa");
+                            : "Zastępstwa");
 
-                    Animation animation = new AlphaAnimation(0.f,1.f);
+                    Animation animation = new AlphaAnimation(0.f, 1.f);
                     animation.setDuration(300);
                     mainLayout.startAnimation(animation);
 
