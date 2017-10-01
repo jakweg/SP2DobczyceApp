@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:elevation="3dp"
+    android:layout_marginTop="@dimen/sectionMargin"
+    android:layout_marginBottom="@dimen/sectionMargin"
+    android:orientation="vertical"
+    android:layout_width="0px"
+    android:clipToPadding="false"
+    android:layout_height="wrap_content"
+    tools:targetApi="lollipop">
+
+    <TextView
+        android:padding="5dp"
+        android:id="@+id/title"
+        android:maxLines="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

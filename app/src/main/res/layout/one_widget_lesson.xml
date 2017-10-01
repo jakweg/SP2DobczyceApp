@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:paddingStart="3dp"
+        android:paddingEnd="3dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:lines="2"
+        android:lineSpacingExtra="0dp"
+        android:lineSpacingMultiplier="1"
+        android:minLines="2"
+        android:textColor="#707070"
+        android:textSize="14sp"
+        android:id="@+id/lesson_name"
+        tools:ignore="RtlSymmetry" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAccent"
+        android:orientation="horizontal" />
+</LinearLayout>

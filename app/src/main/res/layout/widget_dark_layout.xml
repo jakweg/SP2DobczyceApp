@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_margin="6dp"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="22sp"
+        android:gravity="center_horizontal"
+        android:textColor="#FFF"
+        android:id="@+id/title"
+        android:background="@drawable/widget_background"
+        android:text="@string/lesson_plan"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:background="@color/colorPrimary"
+        android:gravity="center_horizontal"
+        android:textColor="#FFF"
+        android:id="@+id/day_name"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundDark"
+            android:id="@+id/lesson_time_layout"
+            android:orientation="vertical" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/sectionBackgroundDark"
+            android:id="@+id/main_layout"
+            android:orientation="vertical" />
+    </LinearLayout>
+</LinearLayout>

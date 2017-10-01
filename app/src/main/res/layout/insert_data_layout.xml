@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ndroid="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/group_lesson_switch"
+        android:text="Lekcja grupowa"
+        android:layout_marginStart="15dp"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAccent"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/group_1_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:paddingStart="5dp"
+            android:textColor="@color/colorAccent"
+            android:text="Grupa 1:"
+            android:id="@+id/group_info"
+            tools:ignore="HardcodedText,RtlSymmetry" />
+        <LinearLayout
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Nazwa: "
+                android:layout_weight="4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/textViewName1"
+                android:hint="Matematyka"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Nauczyciel: "
+                android:layout_weight="4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/textViewTeacher1"
+                android:hint="JP"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Sala: "
+                android:layout_weight="4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/textViewClassroom1"
+                android:hint="69"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAccent"/>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:id="@+id/group_2_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:paddingStart="5dp"
+            android:textColor="@color/colorAccent"
+            android:text="Grupa 2:"
+            tools:ignore="HardcodedText,RtlSymmetry" />
+        <LinearLayout
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Nazwa: "
+                android:layout_weight="4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/textViewName2"
+                android:hint="Matematyka"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Nauczyciel: "
+                android:layout_weight="4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/textViewTeacher2"
+                android:hint="JP"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Sala: "
+                android:layout_weight="4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/textViewClassroom2"
+                android:hint="69"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/save"
+        android:onClick="onSaveClick"
+        tools:ignore="RtlHardcoded" />
+</LinearLayout>

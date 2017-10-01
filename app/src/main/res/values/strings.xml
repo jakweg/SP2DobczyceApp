@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Zastępstwa</string>
+    <string name="no_internet">Brak połączenia z internetem</string>
+    <string name="retry">Ponów próbę</string>
+    <string name="syncing_data">Synchronizacja danych</string>
+    <string name="choose_your_class_or_surname">Wybierz swoją klasę lub nazwisko</string>
+    <string name="your_class" formatted="false">Twoja klasa: %s</string>
+    <string name="your_surname" formatted="false">Twoje nazwisko: %s</string>
+    <string name="i_am_teacher">Jestem nauczycielem</string>
+    <string name="continue_text">Dalej</string>
+    <string name="done">Gotowe</string>
+    <string name="welcome_text">Witaj w aplikacji</string>
+    <string name="cannot_refresh">Nie można odświeżyć 😔</string>
+    <string name="one_new" formatted="false">✔ Zaktualizowano (jedne nowe aktualnści) 😊</string>
+    <string name="something_is_new1" formatted="false">✔ Zaktualizowano (%d nowe aktualności) 😊</string>
+    <string name="something_is_new2" formatted="false">✔ Zaktualizowano (%d nowych aktualności) 😊</string>
+    <string name="updated">✔ Zaktualizowano</string>
+    <string name="nothing_is_new">Nic nowego 😐</string>
+    <string name="lesson_plan">Plan lekcji</string>
+    <string name="settings">Ustawienia</string>
+    <string name="no_class_selected">Nie wybrano klasy 😐</string>
+    <string name="set_class_now">Wybierz teraz</string>
+    <string name="lesson_time_hour" formatted="false">%d. %d:%02d-%d:%02d</string>
+    <string name="open_in_browser">Otwórz w przeglądarce</string>
+    <string name="cannot_load_lesson_plan">Nie można wczytać planu</string>
+    <string name="show_lesson_name">Pokazuj nazwę lekcji</string>
+    <string name="show_teacher_name">Pokazuj nauczyciela</string>
+    <string name="show_class_name">Pokazuj klasę</string>
+    <string name="show_classroom">Pokazuj salę lekcyjną</string>
+    <string name="other_class">Inna klasa</string>
+    <string name="other_teachers">Inni nauczyciele</string>
+    <string name="create_shortcut">Utwórz skrót na pulpicie</string>
+    <string name="shortcut_created">Utworzono skrót 😊</string>
+    <string name="create_shortcut_to_other_class" formatted="false">"Utworzyć skrót do planu %s czy %s?</string>
+    <string name="skip">Pomiń</string>
+    <string name="no_internet_first_run">Do pierwszego uruchmienia wymagane jest połączenie z internetem</string>
+    <string name="title_activity_settings">Ustawienia</string>
+    <string name="main_category">Ogólne</string>
+    <string name="appearance">Wygląd</string>
+    <string name="choose_dark_theme">Wybierz kiedy chcesz mieć ciemny motyw</string>
+    <string name="dark_theme">Ciemny motyw</string>
+    <string name="school_news">Aktualności szkolne</string>
+    <string name="working_in_background">Sprawdzanie w tle</string>
+    <string name="notify_with_sound">Powiadamiaj z dźwiękiem</string>
+    <string name="choose_lucky_number">Wybierz swój numerek</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_not_ready_yet">Aplikacja nie została jeszcze skonfigurowana</string>
+    <string name="make_it_now">Zrób to teraz</string>
+    <string name="edit_lesson_plan">Edytuj plan lekcji</string>
+    <string name="insert_data">Wprowadź dane</string>
+    <string name="save">Zapisz</string>
+    <string name="about_github">Ten projekt jest dostępny na Githubie w pełni OpenSource</string>
+    <string name="show_source_code">Wyświetl kod</string>
+    <string name="about_githubv2">To oznacza, że możesz dowiedzieć się jak działa ta aplikacja a nawet możesz zamieścić w niej własne zmiany!</string>
+
+</resources>
