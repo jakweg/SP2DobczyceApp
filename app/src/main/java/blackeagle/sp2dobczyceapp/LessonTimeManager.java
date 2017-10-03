@@ -100,11 +100,11 @@ abstract class LessonTimeManager {
 
         state.thisState = BEFORE_LESSON;
         int currentSecond = getCurrentSecond();
-        if (currentSecond < (getLessonBeginning(0) - 45) * 60)
+        if (currentSecond < (7 * 60 + 15) * 60)
             return state;
 
         state.thisState = ABOUT_TO_START_LESSON;
-        if (currentSecond < getLessonBeginning(0) * 60)
+        if (currentSecond < 8 * 60)
             return state;
 
         int day = c.get(Calendar.DAY_OF_WEEK) - 2;//poniedziałek daje 2
@@ -126,6 +126,9 @@ abstract class LessonTimeManager {
 
     static class LessonState {
 
+        int thisState = -1;
+        int lessonNumber = -1;
+
         boolean isInSchool() {
             return thisState == LESSON
                     || thisState == BREAK;
@@ -144,9 +147,6 @@ abstract class LessonTimeManager {
                     return 0;
             }
         }
-
-        int thisState = -1;
-        int lessonNumber = -1;
 
     }
 }

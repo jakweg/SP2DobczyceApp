@@ -7,6 +7,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -137,8 +138,13 @@ public class MainActivity extends AppCompatActivity {
             case OPEN_SETTINGS_ID:
                 if (data != null) {
                     if (data.getBooleanExtra("changedClass", false)) {
-                        refreshResult.isFromFile = true;
-                        createViewByResult();
+                        if (Settings.isOnline(this)) {
+                            requestRefresh();
+                        } else {
+                            refreshResult = UpdateManager.getDataFromFile(MainActivity.this);
+                            if (isMeasured)
+                                createViewByResult();
+                        }
                     }
                     if (data.getBooleanExtra("changedTheme", false)) {
                         finish();
@@ -190,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
         if (refreshResult == null)
             return;
         runOnUiThread(new Runnable() {
+            @SuppressWarnings("ConstantConditions")
             @Override
             public void run() {
                 if (refreshResult.success) {
@@ -213,9 +220,11 @@ public class MainActivity extends AppCompatActivity {
                         } else
                             showSnackbarMessage(R.string.nothing_is_new);
                     }
-                    //noinspection ConstantConditions
-                    getSupportActionBar().setTitle(refreshResult.allNewsCount > 0 ? ("Zastępstwa (" + String.valueOf(refreshResult.allNewsCount) + ")")
+                    ActionBar bar = getSupportActionBar();
+                    bar.setTitle(refreshResult.allNewsCount > 0 ?
+                            ("Zastępstwa (" + String.valueOf(refreshResult.allNewsCount) + ")")
                             : "Zastępstwa");
+                    bar.setSubtitle(Settings.getLastUpdateTime());
 
                     Animation animation = new AlphaAnimation(0.f, 1.f);
                     animation.setDuration(300);

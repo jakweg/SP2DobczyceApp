@@ -10,17 +10,18 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 @SuppressWarnings("WeakerAccess")
 abstract class Settings {
-    interface OnSettingsChangeListener {
-        void onClassChange();
 
-        void onThemeChange();
-    }
-
+    static final int DARK_MODE_ALWAYS = 2;
+    static final int DARK_MODE_AUTO = 1;
+    static final int DARK_MODE_NEVER = 0;
+    static final int NOTIFICATION_ID_UPDATE_RESULT = 1;
+    static final int NOTIFICATION_ID_LESSON_FINISH = 2;
     static boolean isReady = false;
-
     static boolean isTeacher;
     static String className = "";
     static boolean canNotify;
@@ -30,6 +31,10 @@ abstract class Settings {
     static int usersNumber = -1;
     static int luckyNumber1 = -1;
     static int luckyNumber2 = -1;
+    static long updateDate = 0;
+    static byte lessonPlanRule = (byte) LessonPlanManager.LessonPlan.RULE_SHOW_CLASSROOM | LessonPlanManager.LessonPlan.RULE_SHOW_SUBJECT | LessonPlanManager.LessonPlan.RULE_SHOW_TEACHER;
+    static int darkModeState;
+    private static boolean isLoaded = false;
 
     static boolean isUserLuckyNumber() {
         return isNumberSelected() &&
@@ -43,16 +48,6 @@ abstract class Settings {
     static boolean isClassSelected() {
         return !"".equals(className);
     }
-
-    static byte lessonPlanRule = (byte) 0x0FFFFF;
-
-    static int darkModeState;
-    static final int DARK_MODE_ALWAYS = 2;
-    static final int DARK_MODE_AUTO = 1;
-    static final int DARK_MODE_NEVER = 0;
-
-    static final int NOTIFICATION_ID_UPDATE_RESULT = 1;
-    static final int NOTIFICATION_ID_LESSON_FINISH = 2;
 
     static boolean applyNowDarkTheme() {
         switch (darkModeState) {
@@ -77,8 +72,6 @@ abstract class Settings {
         return className;
     }
 
-    private static boolean isLoaded = false;
-
     static void loadSettings(Context context) {
         loadSettings(context, false);
     }
@@ -97,13 +90,14 @@ abstract class Settings {
             className = preferences.getString("className", "");
             canNotify = preferences.getBoolean("canNotify", true);
             darkModeState = Integer.valueOf(preferences.getString("darkTheme", String.valueOf(DARK_MODE_NEVER)));
-            lessonPlanRule = (byte) preferences.getInt("lessonPlanRule", 0x0FFFFF);
+            lessonPlanRule = (byte) preferences.getInt("lessonPlanRule", LessonPlanManager.LessonPlan.RULE_SHOW_CLASSROOM | LessonPlanManager.LessonPlan.RULE_SHOW_SUBJECT | LessonPlanManager.LessonPlan.RULE_SHOW_TEACHER);
             canWorkInBackground = preferences.getBoolean("canWorkInBackground", true);
             showFinishTimeNotification = preferences.getBoolean("showFinishTimeNotification", false);
             finishTimeDelay = Integer.valueOf(preferences.getString("finishTimeDelay", "0"));
             usersNumber = Integer.valueOf(preferences.getString("usersNumber", "0"));
             luckyNumber1 = preferences.getInt("luckyNumber1", 0);
             luckyNumber2 = preferences.getInt("luckyNumber2", 0);
+            updateDate = preferences.getLong("updateDate", 0);
 
             LessonPlanManager.loadClassesData(context);
         } catch (Exception e) {
@@ -131,6 +125,7 @@ abstract class Settings {
             editor.putString("usersNumber", String.valueOf(usersNumber));
             editor.putInt("luckyNumber1", luckyNumber1);
             editor.putInt("luckyNumber2", luckyNumber2);
+            editor.putLong("updateDate", updateDate);
 
             editor.apply();
 
@@ -156,6 +151,30 @@ abstract class Settings {
                 return true;
         }
         return false;
+    }
+
+    static String getLastUpdateTime() {
+        if (updateDate == 0)
+            return "";
+        int today = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTimeInMillis(updateDate);
+        int lastTime = c.get(Calendar.DAY_OF_YEAR);
+        switch (today - lastTime) {
+            case 0:
+                return "Zaktualizowano dzisiaj";
+            case 1:
+                return "Zaktualizowano wczoraj";
+            case 2:
+                return "Zaktualizowano przedwczoraj";
+            /*case -1:
+                return "Jutro";
+            case -2:
+                return "Pojutrze";*/
+            default:
+                return String.format(Locale.getDefault(), "Zaktualizowano %02d.%02d.%s", c.get(Calendar.DAY_OF_MONTH),
+                        c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR));
+        }
     }
 
     @ColorInt
@@ -190,5 +209,11 @@ abstract class Settings {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    interface OnSettingsChangeListener {
+        void onClassChange();
+
+        void onThemeChange();
     }
 }

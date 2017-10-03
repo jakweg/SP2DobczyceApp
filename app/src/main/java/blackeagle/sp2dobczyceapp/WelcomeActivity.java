@@ -25,7 +25,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private static final int PAGE_NO_INTERNET = 0;
     private static final int PAGE_LOADING = 1;
     private static final int PAGE_CHOOSE_CLASS = 2;
-    private static final int PAGE_FINAL = 4;
+    //private static final int PAGE_FINAL = 4;
     private static final int PAGE_CHOOSE_NUMBER = 3;
     private int currentPage = -1;
     private LinearLayout mainLayout;
@@ -153,11 +153,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
                             @Override
                             public void onAnimationRepeat(Animation animation) {
-                                if (isReadyToFinish) {
-                                    UpdateService.startService(WelcomeActivity.this);
-                                    finish();
-                                    startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
-                                }
+                                if (isReadyToFinish)
+                                    finishAllTheStuff();
                             }
                         });
                         view.findViewById(R.id.image).startAnimation(animation);
@@ -203,8 +200,9 @@ public class WelcomeActivity extends AppCompatActivity {
                         view.findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (isTeacher)
-                                    setNextPage(PAGE_FINAL);
+                                if (isTeacher) {
+                                    finishAllTheStuff();
+                                }
                                 else
                                     setNextPage(PAGE_CHOOSE_NUMBER);
                             }
@@ -212,9 +210,9 @@ public class WelcomeActivity extends AppCompatActivity {
                         view.findViewById(R.id.skip_button).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                setNextPage(PAGE_FINAL);
                                 isTeacher = false;
                                 selectedClass = "";
+                                finishAllTheStuff();
                             }
                         });
                         break;
@@ -237,19 +235,20 @@ public class WelcomeActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 Settings.usersNumber = Integer.valueOf((String) spinner.getSelectedItem());
-                                setNextPage(PAGE_FINAL);
+                                finishAllTheStuff();
                             }
                         });
                         view.findViewById(R.id.skip_button).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                setNextPage(PAGE_FINAL);
+                                finishAllTheStuff();
+
                                 Settings.usersNumber = 0;
                             }
                         });
                         break;
                     }
-                    case PAGE_FINAL:
+                    /*case PAGE_FINAL:
                         view = inflater.inflate(R.layout.final_layout, mainLayout);
                         view.findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -267,7 +266,7 @@ public class WelcomeActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                        break;
+                        break;*/
                 }
                 Animation anim = new AlphaAnimation(0.f, 1.f);
                 anim.setDuration(300);
@@ -275,6 +274,20 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void finishAllTheStuff() {
+        if (isDownloading) {
+            setNextPage(PAGE_LOADING);
+        } else {
+            Settings.className = selectedClass;
+            Settings.isTeacher = isTeacher;
+            Settings.isReady = true;
+            Settings.saveSettings(WelcomeActivity.this);
+            UpdateService.startService(WelcomeActivity.this);
+            finish();
+            startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+        }
     }
 
     private void onRetryClick() {

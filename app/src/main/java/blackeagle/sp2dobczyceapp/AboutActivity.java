@@ -93,7 +93,7 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     public void onGithubClick(View view) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JakubekWeg/SP2DobczyceApp/"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link)));
         startActivity(intent);
     }
 }

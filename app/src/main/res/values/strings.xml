@@ -53,5 +53,14 @@
     <string name="about_github">Ten projekt jest dostępny na GitHub\'ie</string>
     <string name="show_source_code">Wyświetl kod</string>
     <string name="about_githubv2">Jest więc OpenSource a to oznacza, że możesz dowiedzieć się jak działa ta aplikacja a nawet możesz zamieścić w niej własne zmiany!</string>
+    <string name="github_link">https://github.com/JakubekWeg/SP2DobczyceApp</string>
+    <string name="final_page_text">
+        <!--W ustawieniach znajdziesz opcję zmiany motywu itd.\n
+        <font color="#FF0000">
+            Żaden tutejszy algorytm (ani jego twórca) nie gwarantuje, że zawsze otrzymasz powiadomienie.\n
+        </font>
+        Pamiętaj! Twoim obowiązkiem jest przeczytać <b>całe</b> zastępstwa.!-->
+    </string>
+    <string name="i_agree">Rozumiem</string>
 
 </resources>

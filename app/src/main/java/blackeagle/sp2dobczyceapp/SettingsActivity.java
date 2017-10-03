@@ -29,6 +29,8 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
 
     String lastClass;
+    Intent returnData = new Intent();
+    private boolean isDarkTheme;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,13 +44,10 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
         lastClass = Settings.className;
 
         final MyPreferenceFragment fragment = new MyPreferenceFragment();
-        fragment.context = this;
         fragment.changeListener = this;
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
 
     }
-
-    Intent returnData = new Intent();
 
     @Override
     public void onClassChange() {
@@ -58,8 +57,6 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
         returnData.putExtra("changedClass", true);
         setResult(RESULT_OK, returnData);
     }
-
-    private boolean isDarkTheme;
 
     @Override
     public void onThemeChange() {
@@ -86,8 +83,9 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
     public static class MyPreferenceFragment extends PreferenceFragment {
 
-        Context context = null;
         Settings.OnSettingsChangeListener changeListener = null;
+
+        Context context;
 
         boolean isDarkTheme;
         @ColorInt
@@ -98,6 +96,8 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
+            context = getActivity();
 
             isDarkTheme = Settings.applyNowDarkTheme();
             blackIconColor = Settings.getColor(context, R.color.white);
@@ -303,12 +303,14 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             category.setTitle("Github");
 
             Preference gitPreference = new Preference(context);
+            gitPreference.setIcon(getDyedDrawable(R.drawable.ic_developer));
             gitPreference.setTitle("Otwórz Github");
             gitPreference.setSummary(R.string.about_github);
             gitPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JakubekWeg/SP2DobczyceApp/"));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.github_link)));
                     startActivity(intent);
                     return false;
                 }

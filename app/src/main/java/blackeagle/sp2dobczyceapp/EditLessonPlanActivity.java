@@ -28,12 +28,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Random;
 
 public class EditLessonPlanActivity extends AppCompatActivity {
 
-    private final static int RESULT_APPLY = 1;
-
+    private final static int APPLY_REQUEST_CODE = 1;
+    ViewPager mViewPager;
     private boolean isTeacherPlan;
     private String lessonPlanName;
     private LessonPlanManager.LessonPlan thisPlan = null;
@@ -107,7 +106,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                                 Snackbar.make(lessonTimeLayout, "Dotknij lekcji aby ją edytować", BaseTransientBottomBar.LENGTH_SHORT).show();
                             else
-                                Toast.makeText(EditLessonPlanActivity.this, R.string.no_class_selected, Toast.LENGTH_LONG).show();
+                                Toast.makeText(EditLessonPlanActivity.this, "Dotknij lekcji aby ją edytować", Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
                             //empty
                         }
@@ -118,8 +117,6 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
         disableOrientationChanges();
     }
-
-    ViewPager mViewPager;
 
     @SuppressLint("SwitchIntDef")
     void createTabbedView() {
@@ -210,11 +207,18 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && data != null) {
-            thisPlan.setLesson(data.getExtras().getInt("day", -1),
-                    data.getExtras().getInt("lessonNumber", -1),
-                    (LessonPlanManager.Lesson) data.getExtras().getSerializable("lesson"));
-            createTabbedView();
+        switch (requestCode) {
+            case APPLY_REQUEST_CODE:
+                if (resultCode == RESULT_OK && data != null) {
+                    thisPlan.setLesson(data.getExtras().getInt("day", -1),
+                            data.getExtras().getInt("lessonNumber", -1),
+                            (LessonPlanManager.Lesson) data.getExtras().getSerializable("lesson"));
+                    createTabbedView();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 
@@ -286,7 +290,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
                     intent.putExtra("lesson", lessonPlan.getLesson(thisDay, lessonNumber));
                     intent.putExtra("day", thisDay);
                     intent.putExtra("lessonNumber", lessonNumber);
-                    activity.startActivityForResult(intent, Math.abs(new Random().nextInt() % 100));
+                    activity.startActivityForResult(intent, APPLY_REQUEST_CODE);
                 }
             });
 

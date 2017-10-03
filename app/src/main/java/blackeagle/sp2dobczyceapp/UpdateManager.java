@@ -20,29 +20,42 @@ import java.util.Scanner;
 
 class UpdateManager {
 
-    static Result getDataFromFile(Context context) {
-        Result result = new Result();
-        result.updated = false;
-        result.isFromFile = true;
-        try {
-            File file = new File(context.getApplicationInfo().dataDir + "/substitute");
-            Scanner scanner = new Scanner(file);
-
-            while (scanner.hasNextLine()) {
-                String s = scanner.nextLine().replaceAll("\\n", "\n");
-                result.days.add(s);
-            }
-
-            scanner.close();
-            result.success = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.success = false;
-        }
-        return result;
-    }
-
     private final static Object mutex = new Object();
+
+    static Result getDataFromFile(Context context) {
+        synchronized (mutex) {
+            Result result = new Result();
+            result.updated = false;
+            result.isFromFile = true;
+            try {
+                File file = new File(context.getApplicationInfo().dataDir + "/substitute");
+                Scanner scanner = new Scanner(file);
+
+                while (scanner.hasNextLine()) {
+                    String s = scanner.nextLine().replaceAll("\\n", "\n");
+                    result.days.add(s);
+                }
+
+
+                int count = 0;
+                for (String day : result.days) {
+                    for (String line : day.split("<br  />")) {
+                        if (containsSubstituteForUser(line)) {
+                            count++;
+                        }
+                    }
+                }
+                result.allNewsCount = count;
+
+                scanner.close();
+                result.success = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.success = false;
+            }
+            return result;
+        }
+    }
 
     @NonNull
     static Result update(Context context) {
@@ -66,6 +79,18 @@ class UpdateManager {
                     days.set(i++, section);
                     result.days.add(section);
                 }
+
+
+                ArrayList<String> substitutesList = new ArrayList<>();
+                for (String day : days) {
+                    for (String line : day.split("<br  />")) {
+                        if (containsSubstituteForUser(line)) {
+                            substitutesList.add(line);
+                        }
+                    }
+                }
+
+                result.allNewsCount = substitutesList.size();
 
                 try {
                     String lastContent = "";
@@ -93,16 +118,6 @@ class UpdateManager {
                     e.printStackTrace();
                 }
 
-                ArrayList<String> substitutesList = new ArrayList<>();
-                for (String day : days) {
-                    for (String line : day.split("<br  />")) {
-                        if (containsSubstituteForUser(line)) {
-                            substitutesList.add(line);
-                        }
-                    }
-                }
-
-                result.allNewsCount = substitutesList.size();
 
                 final ArrayList<String> lastUserSubstitutes = loadLastUserSubstitutes(context);
                 saveLastUserSubstitutes(context, substitutesList);
@@ -145,6 +160,7 @@ class UpdateManager {
                     e.printStackTrace();
                 }
                 result.success = true;
+                Settings.updateDate = System.currentTimeMillis();
             } catch (Exception e) {
                 e.printStackTrace();
                 result.success = false;
@@ -175,58 +191,6 @@ class UpdateManager {
         }
 
         return wasText ? builder.toString() : null;
-    }
-
-    static class Result {
-        boolean success = false;
-        boolean updated = true;
-        boolean isFromFile = false;
-        int newCount = 0;
-        int allNewsCount = 0;
-        boolean hasChangedLuckyNumbers = false;
-
-        boolean areNewsForUser() {
-            return newCount != 0 || (hasChangedLuckyNumbers && Settings.isUserLuckyNumber());
-        }
-
-        List<String> days = new ArrayList<>();
-
-        void createViews(Context context, LinearLayout parent, int size) {
-            boolean darkMode = Settings.applyNowDarkTheme();
-            for (String day : days) {
-                Section.createSection(context, day, size, parent, darkMode);
-            }
-            parent.addView(Section.createSeparator(context));
-        }
-
-        void createLuckyNumberView(Context context, LinearLayout parent, int size) {
-            if (Settings.luckyNumber1 == 0 || Settings.luckyNumber2 == 0)
-                return;
-            parent.addView(Section.createSeparator(context));
-            boolean darkMode = Settings.applyNowDarkTheme();
-            LinearLayout layout = new LinearLayout(context);
-            layout.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    (int) (size * 0.94f), LinearLayout.LayoutParams.WRAP_CONTENT);
-            int margin = (int) context.getResources().getDimension(R.dimen.sectionMargin);
-            params.setMargins(0, margin, 0, margin);
-            layout.setLayoutParams(params);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                layout.setElevation(margin * 3 / 5);
-            layout.setBackgroundColor(Settings.getColor(context,
-                    darkMode ? R.color.sectionBackgroundDark : R.color.sectionBackground));
-
-            TextView textView = new TextView(context);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            textView.setMaxLines(2);
-            textView.setPadding(margin, margin, margin, margin);
-            //noinspection deprecation
-            textView.setText(Html.fromHtml(
-                    String.format("Szczęśliwe numerki to <b>%s</b> i <b>%s</b>", Settings.luckyNumber1, Settings.luckyNumber2)));
-            layout.addView(textView);
-            parent.addView(layout);
-        }
     }
 
     private static void saveLastUserSubstitutes(Context context, ArrayList<String> list) {
@@ -294,6 +258,17 @@ class UpdateManager {
         return false;
     }
 
+    static String getNewsUpdateInfo(int count) {
+        if (count == 0)
+            return "Brak nowych zastępstw dla ciebie";
+        if (count == 1)
+            return "Jedno nowe zastępstwo dla ciebie";
+        if (count < 5)
+            return "Dostępne są " + String.valueOf(count) + " nowe zastępstwa";
+
+        return "Dostępne jest " + String.valueOf(count) + " nowych zastępstw";
+    }
+
     static String getUpdateInfo(int count) {
         if (count == 0)
             return "Brak zastępstw dla ciebie";
@@ -303,6 +278,57 @@ class UpdateManager {
             return "Dostępne są " + String.valueOf(count) + " zastępstwa";
 
         return "Dostępne jest " + String.valueOf(count) + " zastępstw";
+    }
+
+    static class Result {
+        boolean success = false;
+        boolean updated = true;
+        boolean isFromFile = false;
+        int newCount = 0;
+        int allNewsCount = 0;
+        boolean hasChangedLuckyNumbers = false;
+        List<String> days = new ArrayList<>();
+
+        boolean areNewsForUser() {
+            return newCount != 0 || (hasChangedLuckyNumbers && Settings.isUserLuckyNumber());
+        }
+
+        void createViews(Context context, LinearLayout parent, int size) {
+            boolean darkMode = Settings.applyNowDarkTheme();
+            for (String day : days) {
+                Section.createSection(context, day, size, parent, darkMode);
+            }
+            parent.addView(Section.createSeparator(context));
+        }
+
+        void createLuckyNumberView(Context context, LinearLayout parent, int size) {
+            if (Settings.luckyNumber1 == 0 || Settings.luckyNumber2 == 0)
+                return;
+            parent.addView(Section.createSeparator(context));
+            boolean darkMode = Settings.applyNowDarkTheme();
+            LinearLayout layout = new LinearLayout(context);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    (int) (size * 0.94f), LinearLayout.LayoutParams.WRAP_CONTENT);
+            int margin = (int) context.getResources().getDimension(R.dimen.sectionMargin);
+            params.setMargins(0, margin, 0, margin);
+            layout.setLayoutParams(params);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                layout.setElevation(margin * 3 / 5);
+            layout.setBackgroundColor(Settings.getColor(context,
+                    darkMode ? R.color.sectionBackgroundDark : R.color.sectionBackground));
+
+            TextView textView = new TextView(context);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            textView.setMaxLines(2);
+            textView.setPadding(margin, margin, margin, margin);
+            //noinspection deprecation
+            textView.setText(Html.fromHtml(
+                    String.format("Szczęśliwe numerki to <b>%s</b> i <b>%s</b>", Settings.luckyNumber1, Settings.luckyNumber2)));
+            layout.addView(textView);
+            parent.addView(layout);
+        }
     }
 
     /*@Deprecated

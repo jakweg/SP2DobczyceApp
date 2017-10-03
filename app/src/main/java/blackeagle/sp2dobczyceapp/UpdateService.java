@@ -18,6 +18,8 @@ import java.util.Arrays;
 public class UpdateService extends Service {
 
     private static UpdateService thisService = null;
+    Thread looperThread;
+    BroadcastReceiver networkListener;
 
     static void startService(Context context) {
         Settings.loadSettings(context);
@@ -36,9 +38,6 @@ public class UpdateService extends Service {
         thisService.stopSelf();
         thisService = null;
     }
-
-    Thread looperThread;
-    BroadcastReceiver networkListener;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -126,7 +125,7 @@ public class UpdateService extends Service {
             }
 
             if (result.newCount > 0)
-                builder.setContentText(UpdateManager.getUpdateInfo(result.newCount));
+                builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
             if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
                 builder.setSubText("Twój szczęśliwy numerek " + Arrays.toString(Character.toChars(0x1F60A)));
             else if (Settings.luckyNumber1 != 0 && Settings.luckyNumber2 != 0)
