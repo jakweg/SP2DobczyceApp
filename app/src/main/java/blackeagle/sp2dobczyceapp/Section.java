@@ -44,7 +44,7 @@ class Section {
 
         //returnValue.setBackgroundColor(Settings.getColor(context,
         //        darkTheme ? R.color.sectionBackgroundDark : R.color.sectionBackground));
-        returnValue.setBackgroundResource(R.drawable.section_background);
+        returnValue.setBackgroundResource(darkTheme ? R.drawable.section_background_dark : R.drawable.section_background);
         returnValue.measure(0, 0);
 
         StringBuilder builder = new StringBuilder();
