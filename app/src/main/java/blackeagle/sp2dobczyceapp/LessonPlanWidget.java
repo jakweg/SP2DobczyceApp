@@ -14,6 +14,8 @@ import java.util.Calendar;
 public class LessonPlanWidget extends AppWidgetProvider {
 
 
+    static int[] widgetIds;
+
     @SuppressLint("SwitchIntDef")
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -49,27 +51,21 @@ public class LessonPlanWidget extends AppWidgetProvider {
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
                 switch (calendar.get(Calendar.DAY_OF_WEEK)) {
                     case Calendar.MONDAY:
-                        views.setTextViewText(R.id.day_name, "Poniedziałek");
                         makeLessonLayout(context, hour < 16 ? 0 : 1, plan, views, isDarkTheme);
                         break;
                     case Calendar.TUESDAY:
-                        views.setTextViewText(R.id.day_name, "Wtorek");
                         makeLessonLayout(context, hour < 16 ? 1 : 2, plan, views, isDarkTheme);
                         break;
                     case Calendar.WEDNESDAY:
-                        views.setTextViewText(R.id.day_name, "Środa");
                         makeLessonLayout(context, hour < 16 ? 2 : 3, plan, views, isDarkTheme);
                         break;
                     case Calendar.THURSDAY:
-                        views.setTextViewText(R.id.day_name, "Wtorek");
                         makeLessonLayout(context, hour < 16 ? 3 : 4, plan, views, isDarkTheme);
                         break;
                     case Calendar.FRIDAY:
-                        views.setTextViewText(R.id.day_name, "Piątek");
                         makeLessonLayout(context, 4, plan, views, isDarkTheme);
                         break;
                     default:
-                        views.setTextViewText(R.id.day_name, "Poniedziałek");
                         makeLessonLayout(context, 0, plan, views, isDarkTheme);
                         break;
                 }
@@ -84,6 +80,23 @@ public class LessonPlanWidget extends AppWidgetProvider {
 
     private static void makeLessonLayout(Context context, int day, @NonNull LessonPlanManager.LessonPlan plan, RemoteViews parent,
                                          boolean isDarkTheme) {
+        switch (day) {
+            case 0:
+                parent.setTextViewText(R.id.day_name, "Poniedziałek");
+                break;
+            case 1:
+                parent.setTextViewText(R.id.day_name, "Wtorek");
+                break;
+            case 2:
+                parent.setTextViewText(R.id.day_name, "Środa");
+                break;
+            case 3:
+                parent.setTextViewText(R.id.day_name, "Czwartek");
+                break;
+            case 4:
+                parent.setTextViewText(R.id.day_name, "Piątek");
+                break;
+        }
         for (int i = 0; i < 8; i++) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.one_widget_lesson);
             views.setTextViewText(R.id.lesson_name, plan.getDisplayedLesson(day, i,
@@ -96,7 +109,15 @@ public class LessonPlanWidget extends AppWidgetProvider {
         }
     }
 
-    static int[] widgetIds;
+    public static void refreshWidgets(Context context) {
+        if (widgetIds == null)
+            return;
+        Intent intent = new Intent(context, LessonPlanWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = widgetIds;
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        context.sendBroadcast(intent);
+    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -112,16 +133,6 @@ public class LessonPlanWidget extends AppWidgetProvider {
 
     @Override
     public void onDisabled(Context context) {
-    }
-
-    public static void refreshWidgets(Context context) {
-        if (widgetIds == null)
-            return;
-        Intent intent = new Intent(context, LessonPlanWidget.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int[] ids = widgetIds;
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-        context.sendBroadcast(intent);
     }
 }
 

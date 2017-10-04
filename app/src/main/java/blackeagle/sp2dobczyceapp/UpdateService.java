@@ -87,8 +87,7 @@ public class UpdateService extends Service {
                             return;
                         }
 
-                        //Thread.sleep(1000);
-                        Thread.sleep(1000 * 60 * 60 * 3);
+                        Thread.sleep(Settings.REFRESH_TIME);
                     } catch (Exception e) {
                         looperThread = null;
                         return;

@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     int width = mainLayout.getWidth();
                     mainLayout.addView(Section.createSeparator(MainActivity.this));
                     refreshResult.createLuckyNumberView(MainActivity.this, mainLayout, width);
+                    mainLayout.addView(Section.createSeparator(MainActivity.this));
                     refreshResult.createViews(MainActivity.this, mainLayout, width);
                     if (!refreshResult.isFromFile) {
                         if (refreshResult.updated) {

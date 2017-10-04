@@ -104,7 +104,7 @@ abstract class LessonTimeManager {
             return state;
 
         state.thisState = ABOUT_TO_START_LESSON;
-        if (currentSecond < 8 * 60)
+        if (currentSecond < 8 * 60 * 60)
             return state;
 
         int day = c.get(Calendar.DAY_OF_WEEK) - 2;//poniedziałek daje 2

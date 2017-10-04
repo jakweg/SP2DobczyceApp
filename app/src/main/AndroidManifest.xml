@@ -67,6 +67,11 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service
+            android:name=".LessonFinishService"
+            android:enabled="true"
+            android:exported="false" />
+
         <receiver
             android:name=".BootCompleteReceiver"
             android:enabled="true"
@@ -75,11 +80,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <service
-            android:name=".LessonFinishService"
-            android:enabled="true"
-            android:exported="false" />
 
         <receiver android:name=".LessonPlanWidget">
             <intent-filter>

@@ -304,7 +304,6 @@ class UpdateManager {
         void createLuckyNumberView(Context context, LinearLayout parent, int size) {
             if (Settings.luckyNumber1 == 0 || Settings.luckyNumber2 == 0)
                 return;
-            parent.addView(Section.createSeparator(context));
             boolean darkMode = Settings.applyNowDarkTheme();
             LinearLayout layout = new LinearLayout(context);
             layout.setOrientation(LinearLayout.VERTICAL);
