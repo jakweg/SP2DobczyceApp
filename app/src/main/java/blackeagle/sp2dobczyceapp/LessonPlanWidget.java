@@ -97,6 +97,7 @@ public class LessonPlanWidget extends AppWidgetProvider {
                 parent.setTextViewText(R.id.day_name, "Piątek");
                 break;
         }
+
         for (int i = 0; i < 8; i++) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.one_widget_lesson);
             views.setTextViewText(R.id.lesson_name, plan.getDisplayedLesson(day, i,

@@ -96,6 +96,7 @@ abstract class LessonTimeManager {
 
     static LessonState getCurrentLesson(int[] counts) {
         Calendar c = Calendar.getInstance();
+
         LessonState state = new LessonState();
 
         state.thisState = BEFORE_LESSON;

@@ -12,6 +12,12 @@ import java.util.Calendar;
 
 public class LessonFinishService extends Service {
     private static LessonFinishService thisService = null;
+    Thread workingThread;
+    Notification notification;
+    Notification.Builder builder;
+    int[] lessonCounts;
+    private LessonTimeManager.LessonState lessonState;
+    private int timeToFinishLesson = 0;
 
     static void startService(Context context) {
         Settings.loadSettings(context);
@@ -31,10 +37,23 @@ public class LessonFinishService extends Service {
         thisService = null;
     }
 
-    Thread workingThread;
-    Notification notification;
-    Notification.Builder builder;
-    int[] lessonCounts;
+    private static int getCurrentMinute() {
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
+    }
+
+    private static boolean isWeekend() {
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        return day == Calendar.SATURDAY || day == Calendar.SUNDAY;
+    }
+
+    /**
+     * @return true if "jest 5 zastepstw", false if "sa 3 zastepstwa"
+     */
+    private static boolean shouldUseSingleNoun(int number) {
+        return !((number > 20 && number % 10 > 1 && number % 10 < 5)
+                || (number < 10 && number % 10 < 5));
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -46,16 +65,6 @@ public class LessonFinishService extends Service {
         return START_STICKY;
     }
 
-    private static int getCurrentMinute() {
-        Calendar c = Calendar.getInstance();
-        return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
-    }
-
-    private static boolean isWeekend() {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        return day == Calendar.SATURDAY || day == Calendar.SUNDAY;
-    }
-
     private void sleepToLesson() throws InterruptedException {
         try {
             int currentMinute = getCurrentMinute();
@@ -63,7 +72,9 @@ public class LessonFinishService extends Service {
                 Thread.sleep((24 * 60 - currentMinute) * 60 * 1000);
                 return;
             }
+
             LessonTimeManager.LessonState currentLesson = LessonTimeManager.getCurrentLesson(lessonCounts);
+
             switch (currentLesson.thisState) {
                 case LessonTimeManager.LESSON:
                 case LessonTimeManager.BREAK:
@@ -105,9 +116,6 @@ public class LessonFinishService extends Service {
         });
         workingThread.start();
     }
-
-    private LessonTimeManager.LessonState lessonState;
-    private int timeToFinishLesson = 0;
 
     private void runSchoolLooper() throws InterruptedException {
         lessonState = LessonTimeManager.getCurrentLesson(lessonCounts);
@@ -180,14 +188,6 @@ public class LessonFinishService extends Service {
             return shouldUseSingleNoun(second) ?
                     "Pozostało " + second + " sekund" :
                     "Pozostały " + second + " sekundy";
-    }
-
-    /**
-     * @return true if "jest 5 zastepstw", false if "sa 3 zastepstwa"
-     */
-    private static boolean shouldUseSingleNoun(int number) {
-        return !((number > 20 && number % 10 > 1 && number % 10 < 5)
-                || (number < 10 && number % 10 < 5));
     }
 
     @Override

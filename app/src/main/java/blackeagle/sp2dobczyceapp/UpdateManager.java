@@ -161,6 +161,7 @@ class UpdateManager {
                 }
                 result.success = true;
                 Settings.updateDate = System.currentTimeMillis();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 result.success = false;

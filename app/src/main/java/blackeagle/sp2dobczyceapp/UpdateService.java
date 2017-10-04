@@ -101,10 +101,8 @@ public class UpdateService extends Service {
     private boolean updateData() {
         try {
             UpdateManager.Result result = UpdateManager.update(this);
-
             if (!result.success)
                 return false;
-
             if (!result.updated || !result.areNewsForUser())
                 return true;
 

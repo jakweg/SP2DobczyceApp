@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                         } else
                             showSnackbarMessage(R.string.nothing_is_new);
                     }
+
                     ActionBar bar = getSupportActionBar();
                     bar.setTitle(refreshResult.allNewsCount > 0 ?
                             ("Zastępstwa (" + String.valueOf(refreshResult.allNewsCount) + ")")
