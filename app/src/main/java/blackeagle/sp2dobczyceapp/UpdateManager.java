@@ -167,6 +167,7 @@ class UpdateManager {
                 result.success = false;
             }
 
+            Settings.saveSettings(context);
             return result;
         }
     }
@@ -309,7 +310,7 @@ class UpdateManager {
             LinearLayout layout = new LinearLayout(context);
             layout.setOrientation(LinearLayout.VERTICAL);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    (int) (size * 0.94f), LinearLayout.LayoutParams.WRAP_CONTENT);
+                    (int) (size * 0.96f), LinearLayout.LayoutParams.WRAP_CONTENT);
             int margin = (int) context.getResources().getDimension(R.dimen.sectionMargin);
             params.setMargins(0, margin, 0, margin);
             layout.setLayoutParams(params);

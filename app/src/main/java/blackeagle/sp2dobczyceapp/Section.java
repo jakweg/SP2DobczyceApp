@@ -40,10 +40,11 @@ class Section {
         //returnValue.setLayoutParams(new LinearLayout.LayoutParams(
         //        (int)((float)size.x * 0.93f), LinearLayout.LayoutParams.WRAP_CONTENT));
         returnValue.setLayoutParams(new RelativeLayout.LayoutParams(
-                (int) (size * 0.94f), ViewGroup.LayoutParams.WRAP_CONTENT));
+                (int) (size * 0.96f), ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        returnValue.setBackgroundColor(Settings.getColor(context,
-                darkTheme ? R.color.sectionBackgroundDark : R.color.sectionBackground));
+        //returnValue.setBackgroundColor(Settings.getColor(context,
+        //        darkTheme ? R.color.sectionBackgroundDark : R.color.sectionBackground));
+        returnValue.setBackgroundResource(R.drawable.section_background);
         returnValue.measure(0, 0);
 
         StringBuilder builder = new StringBuilder();
