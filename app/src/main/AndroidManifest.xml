@@ -44,7 +44,7 @@
         <activity
             android:name=".InsertLessonDataActivity"
             android:label="@string/insert_data"
-            android:theme="@style/DefaultDialogTheme" />
+            android:theme="@style/DefaultDialog" />
         <activity
             android:name=".SettingsActivity"
             android:exported="true"
@@ -90,7 +90,7 @@
                 android:resource="@xml/lesson_plan_widget_info" />
         </receiver>
 
-        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".AboutActivity" />
     </application>
 
 </manifest>

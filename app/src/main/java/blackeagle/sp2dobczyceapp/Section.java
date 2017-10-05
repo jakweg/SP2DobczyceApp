@@ -96,11 +96,8 @@ class Section {
             }
         });
 
-
         final ImageView image = (ImageView) returnValue.findViewById(R.id.image);
-        image.setBackground(getDyedDrawable(context, R.drawable.ic_expand, darkTheme));
-        image.setRotation(thisSection.isShown ? 180.f : 0);
-        image.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (thisSection.isAnimating)
@@ -156,7 +153,12 @@ class Section {
                 animation.setDuration(400);
                 layout.startAnimation(animation);
             }
-        });
+        };
+
+        image.setBackground(getDyedDrawable(context, R.drawable.ic_expand, darkTheme));
+        image.setRotation(thisSection.isShown ? 180.f : 0);
+        image.setOnClickListener(clickListener);
+        titleView.setOnClickListener(clickListener);
 
         layout.addView(returnValue);
         layout.addView(createSeparator(context));

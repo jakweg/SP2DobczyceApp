@@ -74,7 +74,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
 
         String filename = getApplicationInfo().dataDir
-                + (isTeacherPlan ? "/tPlans/" : "/cPlans/")
+                + "/plans/"
                 + lessonPlanName;
 
         thisPlan = LessonPlanManager.getPlan(filename);
@@ -223,10 +223,7 @@ public class EditLessonPlanActivity extends AppCompatActivity {
     }
 
     private void saveAndQuit() {
-        if (thisPlan.isTeacherPlan())
-            thisPlan.saveToFile(getApplicationInfo().dataDir + "/tPlans/" + thisPlan.getName());
-        else
-            thisPlan.saveToFile(getApplicationInfo().dataDir + "/cPlans/" + thisPlan.getName());
+        thisPlan.saveToFile(getApplicationInfo().dataDir + "/plans/" + thisPlan.getName());
 
         finish();
         Intent intent = new Intent(this, LessonPlanActivity.class);

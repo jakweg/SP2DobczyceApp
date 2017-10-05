@@ -16,17 +16,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="DefaultDialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="DialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog">
+        <item name="android:colorPrimary" tools:ignore="NewApi">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent" tools:ignore="NewApi">@color/colorAccent</item>
     </style>
 
-    <style name="DarkDialogTheme" parent="android:Theme.Material.Dialog" tools:ignore="NewApi">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="DarkDialogTheme" parent="android:Theme.DeviceDefault.Dialog" tools:ignore="NewApi">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="DefaultDialog" parent="android:Theme.DeviceDefault.Light.Dialog" />
 
     <style name="DarkThemeSettings" parent="DarkTheme" />
 

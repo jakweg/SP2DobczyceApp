@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <Switch
+        android:id="@+id/group_lesson_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/group_lesson_switch"
-        android:text="Lekcja grupowa"
+        android:layout_marginBottom="5dp"
         android:layout_marginStart="15dp"
+        android:text="Lekcja grupowa"
         tools:ignore="HardcodedText" />
 
     <View
@@ -19,86 +20,86 @@
         android:background="@color/colorAccent" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:id="@+id/group_1_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/group_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:paddingStart="5dp"
-            android:textColor="@color/colorAccent"
             android:text="Grupa 1:"
-            android:id="@+id/group_info"
+            android:textColor="@color/colorAccent"
             tools:ignore="HardcodedText,RtlSymmetry" />
 
         <LinearLayout
-            android:layout_marginStart="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Nazwa: "
-                android:layout_weight="4"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Nazwa: "
                 tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/textViewName1"
-                android:hint="Matematyka"
-                android:layout_weight="6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:hint="Matematyka"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginStart="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Nauczyciel: "
-                android:layout_weight="4"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Nauczyciel: "
                 tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/textViewTeacher1"
-                android:hint="JP"
-                android:layout_weight="6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:hint="JP"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginStart="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Sala: "
-                android:layout_weight="4"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Sala: "
                 tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/textViewClassroom1"
-                android:hint="69"
-                android:layout_weight="6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:hint="69"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
@@ -111,86 +112,86 @@
         android:background="@color/colorAccent" />
 
     <LinearLayout
-        android:visibility="gone"
-        android:orientation="vertical"
         android:id="@+id/group_2_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:paddingStart="5dp"
-            android:textColor="@color/colorAccent"
             android:text="Grupa 2:"
+            android:textColor="@color/colorAccent"
             tools:ignore="HardcodedText,RtlSymmetry" />
 
         <LinearLayout
-            android:layout_marginStart="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Nazwa: "
-                android:layout_weight="4"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Nazwa: "
                 tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/textViewName2"
-                android:hint="Matematyka"
-                android:layout_weight="6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:hint="Matematyka"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginStart="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Nauczyciel: "
-                android:layout_weight="4"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Nauczyciel: "
                 tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/textViewTeacher2"
-                android:hint="JP"
-                android:layout_weight="6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:hint="JP"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginStart="15dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Sala: "
-                android:layout_weight="4"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="Sala: "
                 tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/textViewClassroom2"
-                android:hint="69"
-                android:layout_weight="6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:hint="69"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
@@ -200,7 +201,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="@string/save"
         android:onClick="onSaveClick"
+        android:text="@string/save"
         tools:ignore="RtlHardcoded" />
 </LinearLayout>

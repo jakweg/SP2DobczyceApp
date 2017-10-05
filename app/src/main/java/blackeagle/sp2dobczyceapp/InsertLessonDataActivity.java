@@ -28,8 +28,12 @@ public class InsertLessonDataActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Settings.applyNowDarkTheme() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            setTheme(R.style.DarkDialogTheme);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Settings.applyNowDarkTheme())
+                setTheme(R.style.DarkDialogTheme);
+            else
+                setTheme(R.style.DialogTheme);
+        }
 
         setContentView(R.layout.insert_data_layout);
 

@@ -8,7 +8,9 @@ import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -99,6 +101,13 @@ abstract class Settings {
             luckyNumber2 = preferences.getInt("luckyNumber2", 0);
             updateDate = preferences.getLong("updateDate", 0);
 
+
+            if (isReady) {
+                int lastVersion = preferences.getInt("lastVersion", 0);
+                if (lastVersion == 0)
+                    updateToVersion(lastVersion, context);
+            }
+
             LessonPlanManager.loadClassesData(context);
         } catch (Exception e) {
             //empty
@@ -127,10 +136,38 @@ abstract class Settings {
             editor.putInt("luckyNumber2", luckyNumber2);
             editor.putLong("updateDate", updateDate);
 
+            if (isReady)
+                editor.putInt("lastVersion", 1);
+
             editor.apply();
 
             LessonPlanManager.saveClassesData(context);
 
+        } catch (Exception e) {
+            //empty
+        }
+    }
+
+    static void updateToVersion(int lastVersion, Context context) {
+        try {
+            switch (lastVersion) {
+                case 0:
+                    String path = context.getApplicationInfo().dataDir;
+                    File dir = new File(path + "/plans");
+                    if (!dir.exists() && !dir.mkdir())
+                        Log.e("SP2ERR", "CANNOT CREATE UPDATE DIR");
+
+                    dir = new File(path + "/cPlans");
+                    for (File file : dir.listFiles()) {
+                        if (!file.renameTo(new File(path + "/plans/" + file.getName())))
+                            Log.e("SP2ERR", "CANNOT UPDATE");
+                    }
+                    dir = new File(path + "/tPlans");
+                    for (File file : dir.listFiles()) {
+                        if (!file.renameTo(new File(path + "/plans/" + file.getName())))
+                            Log.e("SP2ERR", "CANNOT UPDATE");
+                    }
+            }
         } catch (Exception e) {
             //empty
         }

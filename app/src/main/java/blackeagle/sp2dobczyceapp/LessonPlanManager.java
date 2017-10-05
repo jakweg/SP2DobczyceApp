@@ -142,13 +142,9 @@ abstract class LessonPlanManager {
     static boolean downloadAllPlans(Context context) {
         try {
             String path = context.getApplicationInfo().dataDir + "/";
-            File planDir = new File(path + "cPlans");
+            File planDir = new File(path + "plans");
             if (!planDir.exists() && !planDir.mkdir())
-                throw new IOException("cPlan dir failed");
-
-            planDir = new File(path + "tPlans");
-            if (!planDir.exists() && !planDir.mkdir())
-                throw new IOException("tPlans dir failed");
+                throw new IOException("plan dir failed");
 
             String html = getHtml("http://sp2dobczyce.pl/planlekcji/lista.html");
 
@@ -158,7 +154,7 @@ abstract class LessonPlanManager {
 
             for (String s : classesHtml.split("</a></p>")) {
                 LessonPlan plan = LessonPlan.downloadPlan(s);
-                plan.saveToFile(path + "cPlans/" + plan.name);
+                plan.saveToFile(path + "plans/" + plan.name);
             }
 
             html = html.substring(html.indexOf("nauczyciele"));
@@ -170,7 +166,7 @@ abstract class LessonPlanManager {
 
             for (String s : teachersHtml.split("</a></p>")) {
                 LessonPlan plan = LessonPlan.downloadPlan(s);
-                plan.saveToFile(path + "tPlans/" + plan.name);
+                plan.saveToFile(path + "plans/" + plan.name);
             }
 
 
@@ -187,7 +183,7 @@ abstract class LessonPlanManager {
         if (!Settings.isClassSelected())
             return null;
         return getPlan(context.getApplicationInfo().dataDir
-                + (Settings.isTeacher ? "/tPlans/" : "/cPlans/")
+                + "/plans/"
                 + Settings.className);
     }
 

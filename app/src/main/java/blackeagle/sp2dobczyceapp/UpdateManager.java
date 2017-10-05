@@ -316,8 +316,7 @@ class UpdateManager {
             layout.setLayoutParams(params);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 layout.setElevation(margin * 3 / 5);
-            layout.setBackgroundColor(Settings.getColor(context,
-                    darkMode ? R.color.sectionBackgroundDark : R.color.sectionBackground));
+            layout.setBackgroundResource(darkMode ? R.drawable.section_background_dark : R.drawable.section_background);
 
             TextView textView = new TextView(context);
             textView.setLayoutParams(new LinearLayout.LayoutParams(

@@ -1,6 +1,7 @@
 package blackeagle.sp2dobczyceapp;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -32,6 +33,7 @@ import java.util.Calendar;
 
 public class LessonPlanActivity extends AppCompatActivity {
 
+    ViewPager mViewPager;
     private boolean isTeacherPlan;
     private String lessonPlanName;
     private LessonPlanManager.LessonPlan thisPlan = null;
@@ -115,12 +117,10 @@ public class LessonPlanActivity extends AppCompatActivity {
         }
     }
 
-    ViewPager mViewPager;
-
     @SuppressLint("SwitchIntDef")
     void createTabbedView() {
         String filename = getApplicationInfo().dataDir
-                + (isTeacherPlan ? "/tPlans/" : "/cPlans/")
+                + "/plans/"
                 + lessonPlanName;
 
         thisPlan = LessonPlanManager.getPlan(filename);
@@ -243,7 +243,56 @@ public class LessonPlanActivity extends AppCompatActivity {
             }
         });
 
-        item = menu.add(R.string.show_lesson_name);
+
+        item = menu.add("Odśwież");
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (Settings.isOnline(LessonPlanActivity.this)) {
+                    final ProgressDialog dialog = ProgressDialog.show(LessonPlanActivity.this, "Wczytywanie danych",
+                            "Pobieranie wszytkich planów...\nTo może zająć chwilę", true);
+                    dialog.setIndeterminate(true);
+                    dialog.setCancelable(false);
+                    dialog.show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (LessonPlanManager.downloadLists() &&
+                                        LessonPlanManager.downloadAllPlans(LessonPlanActivity.this)) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(LessonPlanActivity.this, "Zakończono pomyślnie", Toast.LENGTH_SHORT).show();
+                                            dialog.cancel();
+                                            LessonPlanActivity.this.restartPlan();
+                                        }
+                                    });
+                                } else
+                                    throw new Exception();
+                            } catch (Exception e) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(LessonPlanActivity.this,
+                                                "Wystąpił błąd - aplikacja może nie działać poprawnie!", Toast.LENGTH_LONG).show();
+                                        dialog.cancel();
+                                        LessonPlanActivity.this.restartPlan();
+                                    }
+                                });
+                            }
+                        }
+                    }).start();
+                } else {
+                    Toast.makeText(LessonPlanActivity.this, "Jesteś offline", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
+
+        SubMenu subMenu = menu.addSubMenu("Opcje pokazywania");
+
+        item = subMenu.add(R.string.show_lesson_name);
         item.setCheckable(true);
         item.setChecked((Settings.lessonPlanRule & LessonPlanManager.LessonPlan.RULE_SHOW_SUBJECT) != 0);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -257,9 +306,9 @@ public class LessonPlanActivity extends AppCompatActivity {
         });
 
         if (thisPlan != null)
-            item = menu.add(thisPlan.isTeacherPlan() ? R.string.show_class_name : R.string.show_teacher_name);
+            item = subMenu.add(thisPlan.isTeacherPlan() ? R.string.show_class_name : R.string.show_teacher_name);
         else
-            item = menu.add(Settings.isTeacher ? R.string.show_class_name : R.string.show_teacher_name);
+            item = subMenu.add(Settings.isTeacher ? R.string.show_class_name : R.string.show_teacher_name);
         item.setCheckable(true);
         item.setChecked((Settings.lessonPlanRule & LessonPlanManager.LessonPlan.RULE_SHOW_TEACHER) != 0);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -272,7 +321,7 @@ public class LessonPlanActivity extends AppCompatActivity {
             }
         });
 
-        item = menu.add(R.string.show_classroom);
+        item = subMenu.add(R.string.show_classroom);
         item.setCheckable(true);
         item.setChecked((Settings.lessonPlanRule & LessonPlanManager.LessonPlan.RULE_SHOW_CLASSROOM) != 0);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -285,7 +334,7 @@ public class LessonPlanActivity extends AppCompatActivity {
             }
         });
 
-        SubMenu subMenu = menu.addSubMenu(R.string.other_class);
+        subMenu = menu.addSubMenu(R.string.other_class);
         int id = 100;
         for (String s :
                 LessonPlanManager.classesList) {
