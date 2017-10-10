@@ -6,14 +6,15 @@
     android:orientation="vertical">
 
     <TextView
-        android:paddingStart="8dp"
+        android:id="@+id/lesson_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:lines="2"
         android:maxLines="2"
         android:minLines="2"
-        android:lines="2"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
         android:textSize="16sp"
-        android:id="@+id/lesson_name"
         tools:ignore="RtlSymmetry" />
 
     <View

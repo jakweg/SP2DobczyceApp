@@ -6,10 +6,10 @@ android {
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         applicationId "blackeagle.sp2dobczyceapp"
-        minSdkVersion 18
+        minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -3,9 +3,6 @@ package blackeagle.sp2dobczyceapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -17,10 +14,9 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.InputType;
 import android.widget.Toast;
 
@@ -36,6 +32,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Settings.loadSettings(this);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         if (!Settings.isReady) {
             startActivity(new Intent(this, WelcomeActivity.class));
             finish();
@@ -163,13 +160,13 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             listPreference.setValue(Settings.className);
             listPreference.setSummary(R.string.choose_your_class_or_surname);
             listPreference.setOnPreferenceChangeListener(preferenceListener);
-            listPreference.setIcon(getDyedDrawable(R.drawable.ic_people));
+            listPreference.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_people, isDarkTheme));
             category.addPreference(listPreference);
 
             luckyNumberPreference.setKey("usersNumber");
             luckyNumberPreference.setDefaultValue("0");
             luckyNumberPreference.setEnabled(!Settings.isTeacher);
-            luckyNumberPreference.setIcon(getDyedDrawable(R.drawable.ic_filter_7));
+            luckyNumberPreference.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_filter_7, isDarkTheme));
             luckyNumberPreference.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
             luckyNumberPreference.setTitle("Szczęśliwy numerek");
             luckyNumberPreference.setSummary("Dostaniesz powiadomienie gdy zostaniesz szczęśliwcem");
@@ -202,7 +199,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             CharSequence[] darkThemeValues = new CharSequence[]{"0", "1", "2"};
             darkThemeList.setEntries(darkThemeEntries);
             darkThemeList.setEntryValues(darkThemeValues);
-            darkThemeList.setIcon(getDyedDrawable(R.drawable.ic_style));
+            darkThemeList.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_style, isDarkTheme));
             darkThemeList.setTitle(R.string.dark_theme);
             darkThemeList.setSummary(R.string.choose_dark_theme);
             darkThemeList.setKey("darkTheme");
@@ -232,7 +229,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             allowWorkInBgCheckBox.setTitle("Zazwalaj na działanie w tle");
             allowWorkInBgCheckBox.setSummaryOff("Nie dostaniesz powiadomień");
             allowWorkInBgCheckBox.setSummaryOn("Będziesz dostawać powiadomienia");
-            allowWorkInBgCheckBox.setIcon(getDyedDrawable(R.drawable.ic_sync));
+            allowWorkInBgCheckBox.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_sync, isDarkTheme));
             allowWorkInBgCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -250,7 +247,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             notifyCheckBox.setKey("canNotify");
             //notifyCheckBox.setSummaryOn("Otrzymasz powiadomienia z dźwiękiem");
             //notifyCheckBox.setSummaryOff("Powiadomienie nie zabrzmi");
-            notifyCheckBox.setIcon(getDyedDrawable(R.drawable.ic_notifications));
+            notifyCheckBox.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_notifications, isDarkTheme));
             notifyCheckBox.setDefaultValue(true);
             category.addPreference(notifyCheckBox);
 
@@ -259,7 +256,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             screen.addPreference(category);
 
             CheckBoxPreference showFinishTimeCheckBox = new CheckBoxPreference(context);
-            showFinishTimeCheckBox.setIcon(getDyedDrawable(R.drawable.ic_access_time));
+            showFinishTimeCheckBox.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_access_time, isDarkTheme));
             showFinishTimeCheckBox.setKey("showFinishTimeNotification");
             showFinishTimeCheckBox.setDefaultValue(false);
             showFinishTimeCheckBox.setTitle("Pokazuj powiadomienie");
@@ -303,7 +300,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             category.setTitle("Github");
 
             Preference gitPreference = new Preference(context);
-            gitPreference.setIcon(getDyedDrawable(R.drawable.ic_developer));
+            gitPreference.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_developer, isDarkTheme));
             gitPreference.setTitle("Otwórz Github");
             gitPreference.setSummary(R.string.about_github);
             gitPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -322,11 +319,5 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             setPreferenceScreen(screen);
         }
 
-        private Drawable getDyedDrawable(@DrawableRes int id) {
-            Drawable drawable = ContextCompat.getDrawable(context, id);
-            drawable.setColorFilter(new PorterDuffColorFilter(isDarkTheme ? blackIconColor : whiteIconColor,
-                    PorterDuff.Mode.SRC_IN));
-            return drawable;
-        }
     }
 }

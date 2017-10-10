@@ -1,27 +1,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/widget_background"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:background="@drawable/widget_background">
+    android:padding="10dp">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="150dp"
+        android:layout_gravity="center"
         android:layout_margin="10dp"
         android:gravity="center"
-        android:textColor="#000"
-        android:id="@+id/title"
-        android:layout_gravity="center"
-        android:text="@string/app_not_ready_yet" />
+        android:maxWidth="150dp"
+        android:text="@string/app_not_ready_yet"
+        android:textColor="#000" />
 
     <Button
+        android:id="@+id/error_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:layout_gravity="center"
+        android:layout_margin="10dp"
         android:gravity="center"
-        android:id="@+id/error_button"
         android:text="@string/make_it_now" />
 </LinearLayout>

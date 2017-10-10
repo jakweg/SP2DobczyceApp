@@ -2,12 +2,7 @@ package blackeagle.sp2dobczyceapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -155,7 +150,7 @@ class Section {
             }
         };
 
-        image.setBackground(getDyedDrawable(context, R.drawable.ic_expand, darkTheme));
+        image.setImageDrawable(Settings.getDyedDrawable(context, R.drawable.ic_expand, darkTheme));
         image.setRotation(thisSection.isShown ? 180.f : 0);
         image.setOnClickListener(clickListener);
         titleView.setOnClickListener(clickListener);
@@ -164,14 +159,6 @@ class Section {
         layout.addView(createSeparator(context));
 
         return thisSection;
-    }
-
-    private static Drawable getDyedDrawable(Context context, @DrawableRes int id, boolean isDarkTheme) {
-        Drawable drawable = ContextCompat.getDrawable(context, id);
-        drawable.setColorFilter(new PorterDuffColorFilter(
-                Settings.getColor(context, isDarkTheme ? R.color.white : R.color.black),
-                PorterDuff.Mode.SRC_IN));
-        return drawable;
     }
 
     @Nullable

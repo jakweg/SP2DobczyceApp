@@ -13,8 +13,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.IBinder;
 
-import java.util.Arrays;
-
 public class UpdateService extends Service {
 
     private static UpdateService thisService = null;
@@ -124,7 +122,7 @@ public class UpdateService extends Service {
             if (result.newCount > 0)
                 builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
             if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
-                builder.setSubText("Twój szczęśliwy numerek " + Arrays.toString(Character.toChars(0x1F60A)));
+                builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
             else if (Settings.luckyNumber1 != 0 && Settings.luckyNumber2 != 0)
                 builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
 

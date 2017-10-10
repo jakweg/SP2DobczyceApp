@@ -3,11 +3,17 @@ package blackeagle.sp2dobczyceapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import java.io.File;
@@ -84,6 +90,7 @@ abstract class Settings {
         isLoaded = true;
 
         try {
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
             SharedPreferences preferences =
                     context.getSharedPreferences("settings", Context.MODE_PRIVATE);
 
@@ -245,6 +252,34 @@ abstract class Settings {
             applicationContext.sendBroadcast(addIntent);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    static Drawable getDyedDrawable(Context context, @DrawableRes int id, boolean isDarkTheme) {
+        try {
+            Drawable drawable;
+        /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = ResourcesCompat.getDrawable(context.getResources(), id, null);
+        } else {
+            drawable = ContextCompat.getDrawable(context, id);
+        }
+        if (drawable != null)
+            drawable.setColorFilter(new PorterDuffColorFilter(
+                    Settings.getColor(context, isDarkTheme ? R.color.white : R.color.black),
+                    PorterDuff.Mode.SRC_IN));*/
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                drawable = ContextCompat.getDrawable(context, id);
+            } else {
+                //noinspection deprecation
+                drawable = ContextCompat.getDrawable(context, id);
+            }
+            drawable.setColorFilter(new PorterDuffColorFilter(
+                    Settings.getColor(context, isDarkTheme ? R.color.white : R.color.black),
+                    PorterDuff.Mode.SRC_IN));
+            return drawable;
+        } catch (Exception e) {
+            return null;
         }
     }
 
