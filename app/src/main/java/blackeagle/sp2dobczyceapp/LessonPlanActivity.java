@@ -34,7 +34,6 @@ import java.util.Calendar;
 public class LessonPlanActivity extends AppCompatActivity {
 
     ViewPager mViewPager;
-    private boolean isTeacherPlan;
     private String lessonPlanName;
     private LessonPlanManager.LessonPlan thisPlan = null;
     private int currentPage = -1;
@@ -63,16 +62,19 @@ public class LessonPlanActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (Settings.isClassSelected())
-                lessonPlanName = Settings.getClassOrTeacherName();
+                lessonPlanName = Settings.className;
             else
                 lessonPlanName = LessonPlanManager.classesList.get(0);
-            isTeacherPlan = Settings.isTeacher;
         } else {
-            isTeacherPlan = savedInstanceState.getBoolean("isTeacher");
-            lessonPlanName = savedInstanceState.getString("name");
+            lessonPlanName = savedInstanceState.getString("name", Settings.isClassSelected() ?
+                    Settings.className : LessonPlanManager.classesList.get(0));
             currentPage = savedInstanceState.getInt("page", -1);
         }
 
+        if (!loadLessonPlan()) {
+            Toast.makeText(this, R.string.cannot_load_lesson_plan, Toast.LENGTH_SHORT).show();
+            finish();
+        }
         createTabbedView();
 
         final LinearLayout lessonTimeLayout = (LinearLayout) findViewById(R.id.lesson_time_layout);
@@ -117,16 +119,18 @@ public class LessonPlanActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("SwitchIntDef")
-    void createTabbedView() {
+    private boolean loadLessonPlan() {
         String filename = getApplicationInfo().dataDir
                 + "/plans/"
                 + lessonPlanName;
 
         thisPlan = LessonPlanManager.getPlan(filename);
+        return thisPlan != null;
+    }
+
+    @SuppressLint("SwitchIntDef")
+    void createTabbedView() {
         if (thisPlan == null) {
-            Toast.makeText(this, R.string.cannot_load_lesson_plan, Toast.LENGTH_SHORT).show();
-            finish();
             return;
         }
         setTitle(getTitle() + " " + thisPlan.getInitials());
@@ -187,7 +191,6 @@ public class LessonPlanActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean("isTeacher", isTeacherPlan);
         outState.putString("name", lessonPlanName);
         outState.putInt("page", currentPage);
     }
@@ -201,10 +204,9 @@ public class LessonPlanActivity extends AppCompatActivity {
         startActivity(intent, b);
     }
 
-    void restartPlan(String newPlan, boolean isTeacherPlan) {
+    void restartPlan(String newPlan) {
         finish();
         Intent intent = new Intent(this, LessonPlanActivity.class);
-        intent.putExtra("isTeacher", isTeacherPlan);
         intent.putExtra("name", newPlan);
         intent.putExtra("page", currentPage);
         startActivity(intent);
@@ -235,7 +237,6 @@ public class LessonPlanActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 finish();
                 Intent intent = new Intent(LessonPlanActivity.this, EditLessonPlanActivity.class);
-                intent.putExtra("isTeacher", isTeacherPlan);
                 intent.putExtra("name", thisPlan.getName());
                 intent.putExtra("page", currentPage);
                 startActivity(intent);
@@ -355,23 +356,21 @@ public class LessonPlanActivity extends AppCompatActivity {
                 final String title = thisPlan.getName();
                 if (!Settings.isClassSelected()) {
                     Settings.createShortcut(getApplicationContext(), "Plan lekcji " + thisPlan.getInitials(),
-                            thisPlan.getName(), thisPlan.isTeacherPlan());
+                            thisPlan.getName());
                     Toast.makeText(LessonPlanActivity.this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
-                } else if (title.equals(Settings.getClassOrTeacherName())) {
-                    Settings.createShortcut(getApplicationContext(), "Plan lekcji", null,
-                            false);
+                } else if (title.equals(Settings.className)) {
+                    Settings.createShortcut(getApplicationContext(), "Plan lekcji", null);
                     Toast.makeText(LessonPlanActivity.this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
                 } else {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(LessonPlanActivity.this);
                     builder.setTitle(R.string.create_shortcut);
                     builder.setMessage(getString(R.string.create_shortcut_to_other_class,
-                            Settings.getClassOrTeacherName(), title));
-                    builder.setNegativeButton(Settings.getClassOrTeacherName(), new DialogInterface.OnClickListener() {
+                            Settings.className, title));
+                    builder.setNegativeButton(Settings.className, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            Settings.createShortcut(getApplicationContext(), "Plan lekcji", title,
-                                    Settings.isTeacher);
+                            Settings.createShortcut(getApplicationContext(), "Plan lekcji", null);
                             Toast.makeText(LessonPlanActivity.this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -380,7 +379,7 @@ public class LessonPlanActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             Settings.createShortcut(getApplicationContext(), "Plan lekcji " + thisPlan.getInitials(),
-                                    thisPlan.getName(), thisPlan.isTeacherPlan());
+                                    thisPlan.getName());
                             Toast.makeText(LessonPlanActivity.this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -397,10 +396,10 @@ public class LessonPlanActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id >= 200) {
-            restartPlan(item.getTitle().toString(), true);
+            restartPlan(item.getTitle().toString());//nauczyciele
             return true;
         } else if (id >= 100) {
-            restartPlan(item.getTitle().toString(), false);
+            restartPlan(item.getTitle().toString());//uczniowie
             return true;
         }
         return super.onOptionsItemSelected(item);

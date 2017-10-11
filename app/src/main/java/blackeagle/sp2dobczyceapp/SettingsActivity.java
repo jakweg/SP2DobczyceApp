@@ -49,7 +49,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
     @Override
     public void onClassChange() {
         LessonFinishService.stopService();
-        LessonFinishService.startService(this);
+        LessonFinishService.startService(getApplicationContext());
         LessonPlanWidget.refreshWidgets(getApplicationContext());
         returnData.putExtra("changedClass", true);
         setResult(RESULT_OK, returnData);

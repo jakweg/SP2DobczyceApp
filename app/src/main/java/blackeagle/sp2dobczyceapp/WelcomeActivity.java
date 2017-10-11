@@ -262,7 +262,7 @@ public class WelcomeActivity extends AppCompatActivity {
                                 if (isDownloading) {
                                     setNextPage(PAGE_LOADING);
                                 } else {
-                                    UpdateService.startService(WelcomeActivity.this);
+                                    UpdateService.startService(getApplicationContex());
                                     finish();
                                     startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                                 }
@@ -286,7 +286,7 @@ public class WelcomeActivity extends AppCompatActivity {
             Settings.isTeacher = isTeacher;
             Settings.isReady = true;
             Settings.saveSettings(WelcomeActivity.this);
-            UpdateService.startService(WelcomeActivity.this);
+            UpdateService.startService(getApplicationContext());
             finish();
             startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
         }

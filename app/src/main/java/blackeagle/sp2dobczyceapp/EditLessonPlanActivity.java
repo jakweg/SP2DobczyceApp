@@ -33,7 +33,6 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
     private final static int APPLY_REQUEST_CODE = 1;
     ViewPager mViewPager;
-    private boolean isTeacherPlan;
     private String lessonPlanName;
     private LessonPlanManager.LessonPlan thisPlan = null;
     private int currentPage = -1;
@@ -62,12 +61,10 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (Settings.isClassSelected())
-                lessonPlanName = Settings.getClassOrTeacherName();
+                lessonPlanName = Settings.className;
             else
                 lessonPlanName = LessonPlanManager.classesList.get(0);
-            isTeacherPlan = Settings.isTeacher;
         } else {
-            isTeacherPlan = savedInstanceState.getBoolean("isTeacher");
             lessonPlanName = savedInstanceState.getString("name");
             currentPage = savedInstanceState.getInt("page", -1);
         }
@@ -227,7 +224,6 @@ public class EditLessonPlanActivity extends AppCompatActivity {
 
         finish();
         Intent intent = new Intent(this, LessonPlanActivity.class);
-        intent.putExtra("isTeacher", isTeacherPlan);
         intent.putExtra("name", lessonPlanName);
         intent.putExtra("page", currentPage);
         startActivity(intent);

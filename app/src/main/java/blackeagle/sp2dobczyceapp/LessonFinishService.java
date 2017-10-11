@@ -82,10 +82,11 @@ public class LessonFinishService extends Service {
                     break;
 
                 case LessonTimeManager.AFTER_LESSON:
-                    Thread.sleep((24 * 60 - currentMinute) * 60 * 1000);
+                    //Thread.sleep((24 * 60 - currentMinute) * 60 * 1000);
+                    Thread.sleep(((24 * 60 - currentMinute) + 7 * 60 + 15 + 1) * 60 * 1000);
                     break;
                 case LessonTimeManager.BEFORE_LESSON:
-                    Thread.sleep(((7 * 60 + 15) - currentMinute) * 60 * 1000);
+                    Thread.sleep(((7 * 60 + 15) - currentMinute + 1) * 60 * 1000);
                     break;
             }
         } catch (InterruptedException ie) {

@@ -76,6 +76,10 @@ abstract class Settings {
         return pos < 0 ? className : className.substring(className.indexOf('.') + 1, pos);
     }
 
+    /**
+     * Deprecated - use Settings.className insted
+     */
+    @Deprecated
     static String getClassOrTeacherName() {
         return className;
     }
@@ -231,13 +235,11 @@ abstract class Settings {
         }
     }
 
-    public static void createShortcut(Context applicationContext, String title, @Nullable String className,
-                                      boolean isTeacher) {
+    public static void createShortcut(Context applicationContext, String title, @Nullable String className) {
         try {
             Intent shortcutIntent = new Intent(applicationContext, LessonPlanActivity.class);
             if (className != null) {
                 shortcutIntent.putExtra("name", className);
-                shortcutIntent.putExtra("isTeacher", isTeacher);
             }
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

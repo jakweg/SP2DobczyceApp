@@ -32,60 +32,65 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Settings.loadSettings(this);
-        if (!Settings.isReady) {
-            startActivity(new Intent(this, WelcomeActivity.class));
-            finish();
-            return;
-        }
+        try {
+            Settings.loadSettings(this);
+            if (!Settings.isReady) {
+                startActivity(new Intent(this, WelcomeActivity.class));
+                finish();
+                return;
+            }
 
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        if (Settings.applyNowDarkTheme())
-            setTheme(R.style.DarkTheme);
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+            if (Settings.applyNowDarkTheme())
+                setTheme(R.style.DarkTheme);
 
-        setContentView(R.layout.activity_main);
+            setContentView(R.layout.activity_main);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        myToolbar.setTitleTextColor(0xffffffff);
-        myToolbar.setSubtitleTextColor(0xffffffff);
-        myToolbar.setTitle(R.string.app_name);
-        setSupportActionBar(myToolbar);
+            Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+            myToolbar.setTitleTextColor(0xffffffff);
+            myToolbar.setSubtitleTextColor(0xffffffff);
+            myToolbar.setTitle(R.string.app_name);
+            setSupportActionBar(myToolbar);
 
-        mainLayout = ((LinearLayout) findViewById(R.id.main_layout));
-        mainLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mainLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                isMeasured = true;
-                if (refreshResult != null)
+            mainLayout = ((LinearLayout) findViewById(R.id.main_layout));
+            mainLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mainLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    isMeasured = true;
+                    if (refreshResult != null)
+                        createViewByResult();
+                }
+            });
+
+            refreshLayout = ((SwipeRefreshLayout) findViewById(R.id.refresh_layout));
+            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (Settings.isOnline(MainActivity.this)) {
+                        requestRefresh();
+                    } else {
+                        stopRefreshing();
+                        showSnackbarMessage(R.string.no_internet);
+                    }
+                }
+            });
+
+            if (Settings.isOnline(this)) {
+                requestRefresh();
+            } else {
+                refreshResult = UpdateManager.getDataFromFile(MainActivity.this);
+                if (isMeasured)
                     createViewByResult();
             }
-        });
 
-        refreshLayout = ((SwipeRefreshLayout) findViewById(R.id.refresh_layout));
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (Settings.isOnline(MainActivity.this)) {
-                    requestRefresh();
-                } else {
-                    stopRefreshing();
-                    showSnackbarMessage(R.string.no_internet);
-                }
+            Intent intent = getIntent();
+            if (intent != null && intent.getBooleanExtra("openSettings", false)) {
+                startActivityForResult(new Intent(this, SettingsActivity.class), OPEN_SETTINGS_ID);
             }
-        });
-
-        if (Settings.isOnline(this)) {
-            requestRefresh();
-        } else {
-            refreshResult = UpdateManager.getDataFromFile(MainActivity.this);
-            if (isMeasured)
-                createViewByResult();
-        }
-
-        Intent intent = getIntent();
-        if (intent != null && intent.getBooleanExtra("openSettings", false)) {
-            startActivityForResult(new Intent(this, SettingsActivity.class), OPEN_SETTINGS_ID);
+        } catch (Exception e) {
+            Toast.makeText(this, "Nie udało się uruchomić Activity", Toast.LENGTH_LONG).show();
+            startActivity(getIntent());
         }
     }
 
@@ -99,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 if (Settings.isClassSelected()) {
                     Intent intent = new Intent(MainActivity.this, LessonPlanActivity.class);
-                    intent.putExtra("name", Settings.getClassOrTeacherName());
+                    intent.putExtra("name", Settings.className);
                     intent.putExtra("isTeacher", Settings.isTeacher);
                     startActivity(intent);
                 } else {
