@@ -110,6 +110,9 @@ abstract class LessonTimeManager {
 
         int day = c.get(Calendar.DAY_OF_WEEK) - 2;//poniedziałek daje 2
 
+        if (day >= 5)
+            throw new IllegalStateException("getCurrentLesson(int[]){day>=5}");
+
         for (int i = 0; i < counts[day]; i++) {
             if (currentSecond < (getLessonBeginning(i) + 45) * 60) {
                 state.thisState = LESSON;

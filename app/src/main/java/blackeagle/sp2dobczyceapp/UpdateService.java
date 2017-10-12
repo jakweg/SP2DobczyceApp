@@ -1,5 +1,6 @@
 package blackeagle.sp2dobczyceapp;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,11 +13,13 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
+
+import java.util.Calendar;
 
 public class UpdateService extends Service {
 
     private static UpdateService thisService = null;
-    Thread looperThread;
     BroadcastReceiver networkListener;
 
     static void startService(Context context) {
@@ -42,7 +45,7 @@ public class UpdateService extends Service {
         Settings.loadSettings(this);
         thisService = this;
 
-        runLooperThread();
+        makeUpdate();
 
         return START_STICKY;
     }
@@ -53,7 +56,7 @@ public class UpdateService extends Service {
             public void onReceive(Context context, Intent intent) {
                 unregisterReceiver(this);
                 networkListener = null;
-                runLooperThread();
+                makeUpdate();
             }
         };
 
@@ -67,36 +70,43 @@ public class UpdateService extends Service {
         super.onDestroy();
         if (networkListener != null)
             unregisterReceiver(networkListener);
-        if (looperThread != null)
-            looperThread.interrupt();
         thisService = null;
     }
 
-    private void runLooperThread() {
-        looperThread = new Thread(new Runnable() {
+    private void restartWhenNeeded() {
+        Calendar calendar = Calendar.getInstance();
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("sId", AlarmReceiver.SERVICE_ID_UPDATE);
+
+        ((AlarmManager) getSystemService(Context.ALARM_SERVICE))
+                .set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + Settings.REFRESH_TIME_IN_MILLIS,
+                        PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
+        stopService();
+    }
+
+    private void makeUpdate() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(10000);
-                        if (!Settings.isOnline(UpdateService.this) || !updateData()) {
-                            startWaitingForNetwork();
-                            looperThread = null;
-                            return;
-                        }
+                try {
+                    Thread.sleep(10 * 1000);
 
-                        Thread.sleep(Settings.REFRESH_TIME);
-                    } catch (Exception e) {
-                        looperThread = null;
+                    if (!Settings.isOnline(UpdateService.this) || !updateData()) {
+                        startWaitingForNetwork();
                         return;
                     }
+
+                    restartWhenNeeded();
+                } catch (Exception e) {
+                    //empty
                 }
+                stopService();
             }
-        });
-        looperThread.start();
+        }).start();
     }
 
     private boolean updateData() {
+        Log.d("XD", "UPDATING");
         try {
             UpdateManager.Result result = UpdateManager.update(this);
             if (!result.success)

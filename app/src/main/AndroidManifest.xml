@@ -79,7 +79,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".LessonPlanWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -91,6 +90,11 @@
         </receiver>
 
         <activity android:name=".AboutActivity" />
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:process=":remote" />
     </application>
 
 </manifest>

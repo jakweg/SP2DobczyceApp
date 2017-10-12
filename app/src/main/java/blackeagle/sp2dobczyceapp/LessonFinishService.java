@@ -1,7 +1,10 @@
 package blackeagle.sp2dobczyceapp;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +21,8 @@ public class LessonFinishService extends Service {
     int[] lessonCounts;
     private LessonTimeManager.LessonState lessonState;
     private int timeToFinishLesson = 0;
+
+    private AlarmManager alarmMgr;
 
     static void startService(Context context) {
         Settings.loadSettings(context);
@@ -47,30 +52,62 @@ public class LessonFinishService extends Service {
         return day == Calendar.SATURDAY || day == Calendar.SUNDAY;
     }
 
-    /**
-     * @return true if "jest 5 zastepstw", false if "sa 3 zastepstwa"
-     */
+    // @return true if "jest 5 zastepstw", false if "sa 3 zastepstwa"
     private static boolean shouldUseSingleNoun(int number) {
         return !((number > 20 && number % 10 > 1 && number % 10 < 5)
                 || (number < 10 && number % 10 < 5));
     }
 
+    private PendingIntent getAlarmIntent() {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("sId", AlarmReceiver.SERVICE_ID_FINISH_TIME);
+        return PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    @SuppressLint("SwitchIntDef")
+    private void restartServiceWhenNeeded() {
+        Calendar calendar = Calendar.getInstance();
+        int currentMinute = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        switch (day) {
+            case Calendar.SATURDAY:
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                //no break!
+            case Calendar.SUNDAY:
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                break;
+            default:
+                if (currentMinute >= 7 * 60 + 16) {
+                    calendar.add(Calendar.DAY_OF_YEAR, 1);
+                }
+                break;
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
+        calendar.set(Calendar.MINUTE, 15);
+        calendar.set(Calendar.SECOND, 0);
+        alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), getAlarmIntent());
+        stopService();
+    }
+
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Settings.loadSettings(this);
+    public int onStartCommand(Intent serviceIntent, int flags, int startId) {
         thisService = this;
+        Settings.loadSettings(this);
+        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         runNotification();
 
         return START_STICKY;
     }
 
-    private void sleepToLesson() throws InterruptedException {
+    private boolean sleepToLessons() throws InterruptedException {
         try {
-            int currentMinute = getCurrentMinute();
+            //int currentMinute = getCurrentMinute();
             if (isWeekend()) {
-                Thread.sleep((24 * 60 - currentMinute) * 60 * 1000);
-                return;
+                restartServiceWhenNeeded();
+                return false;
             }
 
             LessonTimeManager.LessonState currentLesson = LessonTimeManager.getCurrentLesson(lessonCounts);
@@ -79,21 +116,15 @@ public class LessonFinishService extends Service {
                 case LessonTimeManager.LESSON:
                 case LessonTimeManager.BREAK:
                 case LessonTimeManager.ABOUT_TO_START_LESSON:
-                    break;
-
-                case LessonTimeManager.AFTER_LESSON:
-                    //Thread.sleep((24 * 60 - currentMinute) * 60 * 1000);
-                    Thread.sleep(((24 * 60 - currentMinute) + 7 * 60 + 15 + 1) * 60 * 1000);
-                    break;
-                case LessonTimeManager.BEFORE_LESSON:
-                    Thread.sleep(((7 * 60 + 15) - currentMinute + 1) * 60 * 1000);
-                    break;
+                    return true;
+                default:
+                    restartServiceWhenNeeded();
+                    return false;
             }
-        } catch (InterruptedException ie) {
-            throw ie;
         } catch (Exception e) {
             //empty
         }
+        return false;
     }
 
     private void runNotification() {
@@ -102,10 +133,10 @@ public class LessonFinishService extends Service {
             public void run() {
                 try {
                     lessonCounts = LessonPlanManager.getLessonsCount(LessonFinishService.this);
-                    while (Settings.showFinishTimeNotification) {
-                        sleepToLesson();
+
+                    if (sleepToLessons())
                         runSchoolLooper();
-                    }
+
                     stopService();
                 } catch (InterruptedException e) {
                     //empty

@@ -23,7 +23,7 @@ import java.util.Locale;
 
 @SuppressWarnings("WeakerAccess")
 abstract class Settings {
-    static final int REFRESH_TIME = 2 * 60 * 60 * 1000;
+    static final int REFRESH_TIME_IN_MILLIS = 2 * 60 * 60 * 1000;
     static final int DARK_MODE_ALWAYS = 2;
     static final int DARK_MODE_AUTO = 1;
     static final int DARK_MODE_NEVER = 0;
