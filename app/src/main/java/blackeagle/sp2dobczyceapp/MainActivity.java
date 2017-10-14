@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -76,7 +75,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            if (Settings.isOnline(this)) {
+            if (savedInstanceState == null && Settings.isOnline(this)
+                    && (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+                    || !Settings.isPowerSaveMode(this))) {
                 requestRefresh();
             } else {
                 refreshResult = UpdateManager.getDataFromFile(MainActivity.this);
@@ -102,14 +103,9 @@ public class MainActivity extends AppCompatActivity {
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (Settings.isClassSelected()) {
-                    Intent intent = new Intent(MainActivity.this, LessonPlanActivity.class);
-                    intent.putExtra("name", Settings.className);
-                    intent.putExtra("isTeacher", Settings.isTeacher);
-                    startActivity(intent);
-                } else {
-                    startActivity(new Intent(MainActivity.this, LessonPlanActivity.class));
-                }
+                Intent intent = new Intent(MainActivity.this, LessonPlanActivity.class);
+                intent.putExtra("fma", true);//from main activity
+                startActivity(intent);
                 return true;
             }
         });
@@ -236,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                             : "Zastępstwa");
                     bar.setSubtitle(Settings.getLastUpdateTime());
 
-                    Animation animation = new AlphaAnimation(0.f, 1.f);
+                    AlphaAnimation animation = new AlphaAnimation(0.f, 1.f);
                     animation.setDuration(300);
                     mainLayout.startAnimation(animation);
 

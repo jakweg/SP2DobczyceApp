@@ -197,7 +197,7 @@ abstract class LessonPlanManager {
         for (int i = 0; i < 5; i++) {
 
             for (int j = 8 - 1; j >= 0; j--) {
-                if (!plan.isEmpty(i, j)) {
+                if (!"".equals(plan.getDisplayedLesson(i, j, LessonPlan.RULE_SHOW_SUBJECT))) {
                     ints[i] = j + 1;
                     break;
                 }

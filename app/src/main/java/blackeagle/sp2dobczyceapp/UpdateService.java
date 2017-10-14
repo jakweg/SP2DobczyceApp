@@ -13,24 +13,34 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
+import android.os.PowerManager;
+import android.support.annotation.RequiresApi;
 
 import java.util.Calendar;
 
 public class UpdateService extends Service {
 
     private static UpdateService thisService = null;
+    private static boolean isStarting = false;
     BroadcastReceiver networkListener;
+    BroadcastReceiver batteryListener;
 
     static void startService(Context context) {
-        Settings.loadSettings(context);
-        if (!Settings.isReady)
+        if (isStarting)
             return;
-        if (thisService != null)
-            return;
-        if (!Settings.canWorkInBackground)
-            return;
-        context.startService(new Intent(context, UpdateService.class));
+        try {
+            isStarting = true;
+            Settings.loadSettings(context);
+            if (!Settings.isReady)
+                return;
+            if (thisService != null)
+                return;
+            if (!Settings.canWorkInBackground)
+                return;
+            context.startService(new Intent(context, UpdateService.class));
+        } finally {
+            isStarting = false;
+        }
     }
 
     static void stopService() {
@@ -42,8 +52,8 @@ public class UpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Settings.loadSettings(this);
         thisService = this;
+        Settings.loadSettings(this);
 
         makeUpdate();
 
@@ -65,11 +75,30 @@ public class UpdateService extends Service {
         registerReceiver(networkListener, filter);
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private void startWaitingForBattery() {
+        batteryListener = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                unregisterReceiver(this);
+                batteryListener = null;
+                makeUpdate();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
+        registerReceiver(batteryListener, filter);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (networkListener != null)
             unregisterReceiver(networkListener);
+        networkListener = null;
+        if (batteryListener != null)
+            unregisterReceiver(batteryListener);
+        batteryListener = null;
         thisService = null;
     }
 
@@ -91,6 +120,10 @@ public class UpdateService extends Service {
                 try {
                     Thread.sleep(10 * 1000);
 
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Settings.isPowerSaveMode(UpdateService.this)) {
+                        startWaitingForBattery();
+                        return;
+                    }
                     if (!Settings.isOnline(UpdateService.this) || !updateData()) {
                         startWaitingForNetwork();
                         return;
@@ -106,7 +139,6 @@ public class UpdateService extends Service {
     }
 
     private boolean updateData() {
-        Log.d("XD", "UPDATING");
         try {
             UpdateManager.Result result = UpdateManager.update(this);
             if (!result.success)

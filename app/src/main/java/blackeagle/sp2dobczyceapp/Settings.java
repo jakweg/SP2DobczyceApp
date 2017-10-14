@@ -8,10 +8,12 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.PowerManager;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
@@ -74,14 +76,6 @@ abstract class Settings {
     static String getTeacherName() {
         int pos = className.indexOf('(') - 1;
         return pos < 0 ? className : className.substring(className.indexOf('.') + 1, pos);
-    }
-
-    /**
-     * Deprecated - use Settings.className insted
-     */
-    @Deprecated
-    static String getClassOrTeacherName() {
-        return className;
     }
 
     static void loadSettings(Context context) {
@@ -257,6 +251,11 @@ abstract class Settings {
         }
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    static boolean isPowerSaveMode(Context context) {
+        return ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).isPowerSaveMode();
+    }
 
     static Drawable getDyedDrawable(Context context, @DrawableRes int id, boolean isDarkTheme) {
         try {

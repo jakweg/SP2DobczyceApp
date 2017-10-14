@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Zastępstwa</string>
-    <string name="no_internet">Brak połączenia z internetem</string>
+    <string name="no_internet">Brak połączenia z internetem 😓</string>
     <string name="retry">Ponów próbę</string>
     <string name="syncing_data">Synchronizacja danych</string>
     <string name="choose_your_class_or_surname">Wybierz swoją klasę lub nazwisko</string>

@@ -15,24 +15,31 @@ import java.util.Calendar;
 
 public class LessonFinishService extends Service {
     private static LessonFinishService thisService = null;
+    private static boolean isStarting = false;
     Thread workingThread;
     Notification notification;
     Notification.Builder builder;
     int[] lessonCounts;
     private LessonTimeManager.LessonState lessonState;
     private int timeToFinishLesson = 0;
-
     private AlarmManager alarmMgr;
 
     static void startService(Context context) {
-        Settings.loadSettings(context);
-        if (!Settings.isReady)
+        if (isStarting)
             return;
-        if (thisService != null)
-            return;
-        if (!Settings.showFinishTimeNotification)
-            return;
-        context.startService(new Intent(context, LessonFinishService.class));
+        isStarting = true;
+        try {
+            Settings.loadSettings(context);
+            if (!Settings.isReady)
+                return;
+            if (thisService != null)
+                return;
+            if (!Settings.showFinishTimeNotification)
+                return;
+            context.startService(new Intent(context, LessonFinishService.class));
+        } finally {
+            isStarting = false;
+        }
     }
 
     static void stopService() {
@@ -40,11 +47,6 @@ public class LessonFinishService extends Service {
             return;
         thisService.stopSelf();
         thisService = null;
-    }
-
-    private static int getCurrentMinute() {
-        Calendar c = Calendar.getInstance();
-        return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
     }
 
     private static boolean isWeekend() {
@@ -66,6 +68,8 @@ public class LessonFinishService extends Service {
 
     @SuppressLint("SwitchIntDef")
     private void restartServiceWhenNeeded() {
+        if (thisService == null)
+            return;
         Calendar calendar = Calendar.getInstance();
         int currentMinute = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -87,6 +91,7 @@ public class LessonFinishService extends Service {
         calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 15);
         calendar.set(Calendar.SECOND, 0);
+
         alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), getAlarmIntent());
         stopService();
     }
@@ -104,7 +109,6 @@ public class LessonFinishService extends Service {
 
     private boolean sleepToLessons() throws InterruptedException {
         try {
-            //int currentMinute = getCurrentMinute();
             if (isWeekend()) {
                 restartServiceWhenNeeded();
                 return false;
@@ -137,10 +141,10 @@ public class LessonFinishService extends Service {
                     if (sleepToLessons())
                         runSchoolLooper();
 
-                    stopService();
+                    restartServiceWhenNeeded();
                 } catch (InterruptedException e) {
-                    //empty
-                    stopService();
+                    if (Settings.showFinishTimeNotification)
+                        restartServiceWhenNeeded();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

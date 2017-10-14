@@ -71,6 +71,10 @@ public class LessonPlanActivity extends AppCompatActivity {
             currentPage = savedInstanceState.getInt("page", -1);
         }
 
+        if (getIntent().getBooleanExtra("fma", false))//from main activity
+            toolbar.setNavigationIcon(R.drawable.ic_back);
+
+
         if (!loadLessonPlan()) {
             Toast.makeText(this, R.string.cannot_load_lesson_plan, Toast.LENGTH_SHORT).show();
             finish();
@@ -395,12 +399,18 @@ public class LessonPlanActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id >= 200) {
-            restartPlan(item.getTitle().toString());//nauczyciele
-            return true;
-        } else if (id >= 100) {
-            restartPlan(item.getTitle().toString());//uczniowie
-            return true;
+        if (id == android.R.id.home)
+            finish();
+
+        CharSequence title = item.getTitle();
+        if (title != null) {
+            if (id >= 200) {
+                restartPlan(title.toString());//nauczyciele
+                return true;
+            } else if (id >= 100) {
+                restartPlan(title.toString());//uczniowie
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

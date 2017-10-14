@@ -280,7 +280,12 @@ public class EditLessonPlanActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(contextThemeWrapper.getBaseContext(), InsertLessonDataActivity.class);
-                    intent.putExtra("lesson", lessonPlan.getLesson(thisDay, lessonNumber));
+                    LessonPlanManager.Lesson lesson = lessonPlan.getLesson(thisDay, lessonNumber);
+                    if (lesson == null) {
+                        lesson = new LessonPlanManager.Lesson();
+                        lesson.isEmpty = true;
+                    }
+                    intent.putExtra("lesson", lesson);
                     intent.putExtra("day", thisDay);
                     intent.putExtra("lessonNumber", lessonNumber);
                     activity.startActivityForResult(intent, APPLY_REQUEST_CODE);
