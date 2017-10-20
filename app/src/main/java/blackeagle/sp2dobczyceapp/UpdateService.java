@@ -55,7 +55,15 @@ public class UpdateService extends Service {
         thisService = this;
         Settings.loadSettings(this);
 
-        makeUpdate();
+        if (!Settings.canWorkInBackground) {
+            stopService();
+            return START_NOT_STICKY;
+        }
+
+        if (Settings.updateDate + Settings.REFRESH_TIME_IN_MILLIS < System.currentTimeMillis())
+            makeUpdate();
+        else
+            restartWhenNeeded();
 
         return START_STICKY;
     }
@@ -93,13 +101,17 @@ public class UpdateService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (networkListener != null)
-            unregisterReceiver(networkListener);
-        networkListener = null;
-        if (batteryListener != null)
-            unregisterReceiver(batteryListener);
-        batteryListener = null;
-        thisService = null;
+        try {
+            if (networkListener != null)
+                unregisterReceiver(networkListener);
+            networkListener = null;
+            if (batteryListener != null)
+                unregisterReceiver(batteryListener);
+            batteryListener = null;
+            thisService = null;
+        } catch (Exception e) {
+            //empty
+        }
     }
 
     private void restartWhenNeeded() {
@@ -152,8 +164,10 @@ public class UpdateService extends Service {
             builder.setContentTitle(getString(R.string.school_news));
             builder.setAutoCancel(true);
             builder.setPriority(Notification.PRIORITY_HIGH);
-            builder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), PendingIntent.FLAG_ONE_SHOT,
-                    new Intent(thisService, MainActivity.class), Intent.FILL_IN_ACTION));
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            builder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), PendingIntent.FLAG_UPDATE_CURRENT,
+                    intent, Intent.FILL_IN_ACTION));
             if (Settings.canNotify)
                 builder.setDefaults(Notification.DEFAULT_ALL);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -161,12 +175,16 @@ public class UpdateService extends Service {
                 builder.setVisibility(Notification.VISIBILITY_PUBLIC);
             }
 
-            if (result.newCount > 0)
+            if (result.newCount > 0) { //zastępstwa
                 builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
-            if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
-                builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
-            else if (Settings.luckyNumber1 != 0 && Settings.luckyNumber2 != 0)
+                if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
+                    builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
+                else
+                    builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
+            } else if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber()) { //brak zastepstw ale numerek
+                builder.setContentText("Twój szczęśliwy numerek \uD83D\uDE0A");
                 builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
+            }
 
             Notification notification = builder.build();
 

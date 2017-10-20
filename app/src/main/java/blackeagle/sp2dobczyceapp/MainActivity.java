@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     UpdateManager.Result refreshResult = null;
     boolean isMeasured = false;
+    boolean ignoreNoUpdate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +76,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            Intent intent = getIntent();
+
+            ignoreNoUpdate = intent != null && intent.getBooleanExtra("fromNotification", false);
+
             if (savedInstanceState == null && Settings.isOnline(this)
                     && (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
                     || !Settings.isPowerSaveMode(this))) {
                 requestRefresh();
             } else {
+                ignoreNoUpdate = false;
                 refreshResult = UpdateManager.getDataFromFile(MainActivity.this);
                 if (isMeasured)
                     createViewByResult();
             }
 
-            Intent intent = getIntent();
             if (intent != null && intent.getBooleanExtra("openSettings", false)) {
                 startActivityForResult(new Intent(this, SettingsActivity.class), OPEN_SETTINGS_ID);
             }
@@ -222,9 +227,11 @@ public class MainActivity extends AppCompatActivity {
                                     showSnackbarMessage(getString(R.string.something_is_new2, refreshResult.newCount));
                             } else
                                 showSnackbarMessage(R.string.updated);
-                        } else
+                        } else if (!ignoreNoUpdate)
                             showSnackbarMessage(R.string.nothing_is_new);
                     }
+
+                    ignoreNoUpdate = false;
 
                     ActionBar bar = getSupportActionBar();
                     bar.setTitle(refreshResult.allNewsCount > 0 ?

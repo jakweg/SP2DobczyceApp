@@ -152,6 +152,7 @@ class UpdateManager {
                         int number2 = Integer.valueOf(numbers[1]);
 
                         result.hasChangedLuckyNumbers = Settings.luckyNumber1 != number1 || number2 != Settings.luckyNumber2;
+                        result.updated = result.updated || result.hasChangedLuckyNumbers;
 
                         Settings.luckyNumber1 = number1;
                         Settings.luckyNumber2 = number2;
@@ -226,7 +227,10 @@ class UpdateManager {
 
     static boolean containsSubstituteForUser(String line) {
         try {
-            if (line.contains("wycieczka") || line.contains("wyjazd") || line.contains("rekolekcje"))
+            if (line.contains("wycieczka")
+                    || line.contains("wyjazd")
+                    || line.contains("rekolekcje")
+                    || line.contains("pielgrzymka"))
                 return false;
 
             line = line.toLowerCase();
@@ -238,9 +242,10 @@ class UpdateManager {
                     return true;
             } else if (Settings.isClassSelected()) {
                 String searchString = Settings.className.toLowerCase();
-
                 final char classChar1 = searchString.charAt(0);
                 final char classChar2 = searchString.charAt(searchString.length() - 1);
+                if (searchString.length() == 4)
+                    searchString = new String(new char[]{classChar1, classChar2});
 
                 int pos = line.indexOf(searchString);
                 if (pos != -1) {
