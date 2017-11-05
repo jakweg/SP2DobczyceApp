@@ -12,7 +12,7 @@
         android:background="@color/colorPrimaryDark"
         android:gravity="center_horizontal"
         android:maxLines="1"
-        android:text="@string/lesson_plan"
+        android:text="@string/timetable"
         android:textColor="#FFF"
         android:textSize="22sp" />
 

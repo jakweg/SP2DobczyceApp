@@ -46,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_main);
 
-            Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar myToolbar = findViewById(R.id.toolbar);
             myToolbar.setTitleTextColor(0xffffffff);
             myToolbar.setSubtitleTextColor(0xffffffff);
             myToolbar.setTitle(R.string.app_name);
             setSupportActionBar(myToolbar);
 
-            mainLayout = ((LinearLayout) findViewById(R.id.main_layout));
+            mainLayout = findViewById(R.id.main_layout);
             mainLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            refreshLayout = ((SwipeRefreshLayout) findViewById(R.id.refresh_layout));
+            refreshLayout = findViewById(R.id.refresh_layout);
             refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -80,9 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
             ignoreNoUpdate = intent != null && intent.getBooleanExtra("fromNotification", false);
 
-            if (savedInstanceState == null && Settings.isOnline(this)
-                    && (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-                    || !Settings.isPowerSaveMode(this))) {
+            if (savedInstanceState == null && Settings.isOnline(this)) {
                 requestRefresh();
             } else {
                 ignoreNoUpdate = false;
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem item = menu.add(R.string.lesson_plan);
+        MenuItem item = menu.add(R.string.timetable);
         item.setIcon(R.drawable.ic_event);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {

@@ -14,9 +14,9 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-
-import java.util.Calendar;
+import android.support.v4.app.NotificationCompat;
 
 public class UpdateService extends Service {
 
@@ -55,6 +55,8 @@ public class UpdateService extends Service {
         thisService = this;
         Settings.loadSettings(this);
 
+        Settings.createNotificationChannels(getApplicationContext());
+
         if (!Settings.canWorkInBackground) {
             stopService();
             return START_NOT_STICKY;
@@ -79,7 +81,6 @@ public class UpdateService extends Service {
         };
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-
         registerReceiver(networkListener, filter);
     }
 
@@ -115,13 +116,19 @@ public class UpdateService extends Service {
     }
 
     private void restartWhenNeeded() {
-        Calendar calendar = Calendar.getInstance();
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("sId", AlarmReceiver.SERVICE_ID_UPDATE);
 
-        ((AlarmManager) getSystemService(Context.ALARM_SERVICE))
-                .set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + Settings.REFRESH_TIME_IN_MILLIS,
-                        PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            long triggerAtMillis = Settings.updateDate + Settings.REFRESH_TIME_IN_MILLIS;
+            long now = System.currentTimeMillis();
+            if (now > triggerAtMillis)
+                triggerAtMillis = now + Settings.REFRESH_TIME_IN_MILLIS;
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis,
+                    PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
+        }
         stopService();
     }
 
@@ -142,12 +149,54 @@ public class UpdateService extends Service {
                     }
 
                     restartWhenNeeded();
+                    return;
                 } catch (Exception e) {
                     //empty
                 }
                 stopService();
             }
         }).start();
+    }
+
+    @NonNull
+    private Notification createNotification(@NonNull UpdateManager.Result result) {
+        boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
+        //noinspection deprecation
+        NotificationCompat.Builder builder = useOldNotification ?
+                new NotificationCompat.Builder(this) :
+                new NotificationCompat.Builder(this, Settings.CHANNEL_ID_NEWS);
+
+        builder.setSmallIcon(R.drawable.ic_school_png);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.ic_launcher_round));
+        builder.setContentTitle(getString(R.string.school_news));
+        builder.setAutoCancel(true);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("fromNotification", true);
+        builder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), PendingIntent.FLAG_UPDATE_CURRENT,
+                intent, Intent.FILL_IN_ACTION));
+
+        if (useOldNotification) {
+            builder.setPriority(Notification.PRIORITY_HIGH);
+            if (Settings.canNotify)
+                builder.setDefaults(Notification.DEFAULT_ALL);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setCategory(Notification.CATEGORY_EVENT);
+                builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+            }
+        }
+
+        if (result.newCount > 0) { //zastępstwa
+            builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
+            if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
+                builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
+            else
+                builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
+        } else if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber()) { //brak zastepstw ale numerek
+            builder.setContentText("Twój szczęśliwy numerek \uD83D\uDE0A");
+            builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
+        }
+
+        return builder.build();
     }
 
     private boolean updateData() {
@@ -158,38 +207,11 @@ public class UpdateService extends Service {
             if (!result.updated || !result.areNewsForUser())
                 return true;
 
-            Notification.Builder builder = new Notification.Builder(this);
-            builder.setSmallIcon(R.drawable.ic_school);
-            builder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.ic_launcher_round));
-            builder.setContentTitle(getString(R.string.school_news));
-            builder.setAutoCancel(true);
-            builder.setPriority(Notification.PRIORITY_HIGH);
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("fromNotification", true);
-            builder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), PendingIntent.FLAG_UPDATE_CURRENT,
-                    intent, Intent.FILL_IN_ACTION));
-            if (Settings.canNotify)
-                builder.setDefaults(Notification.DEFAULT_ALL);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder.setCategory(Notification.CATEGORY_EVENT);
-                builder.setVisibility(Notification.VISIBILITY_PUBLIC);
-            }
-
-            if (result.newCount > 0) { //zastępstwa
-                builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
-                if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
-                    builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
-                else
-                    builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
-            } else if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber()) { //brak zastepstw ale numerek
-                builder.setContentText("Twój szczęśliwy numerek \uD83D\uDE0A");
-                builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
-            }
-
-            Notification notification = builder.build();
+            Notification notification = createNotification(result);
 
             NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            manager.notify(Settings.NOTIFICATION_ID_UPDATE_RESULT, notification);
+            if (manager != null)
+                manager.notify(Settings.NOTIFICATION_ID_UPDATE_RESULT, notification);
 
             return true;
         } catch (Exception e) {

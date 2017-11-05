@@ -39,6 +39,7 @@ public class InsertLessonDataActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
 
+        //noinspection ConstantConditions
         LessonPlanManager.Lesson lesson = (LessonPlanManager.Lesson) extras.getSerializable("lesson");
         thisDay = extras.getInt("day", -1);
         thisLesson = extras.getInt("lessonNumber", -1);
@@ -47,7 +48,7 @@ public class InsertLessonDataActivity extends Activity {
             return;
         }
 
-        groupSwitch = (Switch) findViewById(R.id.group_lesson_switch);
+        groupSwitch = findViewById(R.id.group_lesson_switch);
         groupSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -56,13 +57,15 @@ public class InsertLessonDataActivity extends Activity {
             }
         });
         groupSwitch.setChecked(lesson.isGroupLesson);
+        findViewById(R.id.group_info).setVisibility(lesson.isGroupLesson ? View.VISIBLE : View.GONE);
 
-        nameView1 = ((EditText) findViewById(R.id.textViewName1));
-        nameView2 = ((EditText) findViewById(R.id.textViewName2));
-        teacherView1 = ((EditText) findViewById(R.id.textViewTeacher1));
-        teacherView2 = ((EditText) findViewById(R.id.textViewTeacher2));
-        classroomView1 = ((EditText) findViewById(R.id.textViewClassroom1));
-        classroomView2 = ((EditText) findViewById(R.id.textViewClassroom2));
+
+        nameView1 = findViewById(R.id.textViewName1);
+        nameView2 = findViewById(R.id.textViewName2);
+        teacherView1 = findViewById(R.id.textViewTeacher1);
+        teacherView2 = findViewById(R.id.textViewTeacher2);
+        classroomView1 = findViewById(R.id.textViewClassroom1);
+        classroomView2 = findViewById(R.id.textViewClassroom2);
 
         if (lesson.isGroupLesson) {
             nameView1.setText(lesson.groupName[0]);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -15,10 +16,13 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.InputType;
 import android.widget.Toast;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 
 public class SettingsActivity extends PreferenceActivity implements Settings.OnSettingsChangeListener {
@@ -48,6 +52,9 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
     @Override
     public void onClassChange() {
+        try {
+            ShortcutBadger.removeCount(getApplicationContext());
+        } catch (Exception e) {/*xd*/ }
         LessonFinishService.stopService();
         LessonFinishService.startService(getApplicationContext());
         LessonPlanWidget.refreshWidgets(getApplicationContext());
@@ -219,6 +226,28 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             });
             category.addPreference(darkThemeList);
 
+            try {
+                CheckBoxPreference showBadgesCheckBox = new CheckBoxPreference(context);
+                showBadgesCheckBox.setTitle("Liczbę zastępstw na pulpicie");
+                showBadgesCheckBox.setKey("showBadges");
+                if (ShortcutBadger.isBadgeCounterSupported(context.getApplicationContext()))
+                    showBadgesCheckBox.setSummary("Pokazuj liczbę zastępstw na ikonie w ekranie głównym");
+                else
+                    showBadgesCheckBox.setSummary("Obecna strona główna nie wspiera tej funkcji");
+                showBadgesCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        Settings.showBadges = (boolean) newValue;
+                        if (!((boolean) newValue))
+                            ShortcutBadger.removeCount(context.getApplicationContext());
+                        return true;
+                    }
+                });
+                category.addPreference(showBadgesCheckBox);
+            } catch (Exception e) {
+                //xd
+            }
+
             category = new PreferenceCategory(context);
             category.setTitle(R.string.working_in_background);
             screen.addPreference(category);
@@ -242,14 +271,32 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             });
             category.addPreference(allowWorkInBgCheckBox);
 
-            CheckBoxPreference notifyCheckBox = new CheckBoxPreference(context);
-            notifyCheckBox.setTitle(R.string.notify_with_sound);
-            notifyCheckBox.setKey("canNotify");
-            //notifyCheckBox.setSummaryOn("Otrzymasz powiadomienia z dźwiękiem");
-            //notifyCheckBox.setSummaryOff("Powiadomienie nie zabrzmi");
-            notifyCheckBox.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_notifications, isDarkTheme));
-            notifyCheckBox.setDefaultValue(true);
-            category.addPreference(notifyCheckBox);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Preference notifyPreference = new Preference(context);
+                notifyPreference.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_notifications, isDarkTheme));
+                notifyPreference.setTitle("Ustawienia powiadomień");
+                notifyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Intent i = new Intent(android.provider.Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                        i.putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+                        i.putExtra(android.provider.Settings.EXTRA_CHANNEL_ID, Settings.CHANNEL_ID_NEWS);
+                        startActivity(i);
+                        return true;
+                    }
+                });
+                category.addPreference(notifyPreference);
+            } else {
+                CheckBoxPreference notifyCheckBox = new CheckBoxPreference(context);
+                notifyCheckBox.setTitle(R.string.notify_with_sound);
+                notifyCheckBox.setKey("canNotify");
+                //notifyCheckBox.setSummaryOn("Otrzymasz powiadomienia z dźwiękiem");
+                //notifyCheckBox.setSummaryOff("Powiadomienie nie zabrzmi");
+                notifyCheckBox.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_notifications, isDarkTheme));
+                notifyCheckBox.setDefaultValue(true);
+                category.addPreference(notifyCheckBox);
+            }
 
             category = new PreferenceCategory(context);
             category.setTitle("Czas do końca lekcji");

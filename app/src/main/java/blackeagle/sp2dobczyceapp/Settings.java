@@ -1,5 +1,8 @@
 package blackeagle.sp2dobczyceapp;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,25 +16,30 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
 @SuppressWarnings("WeakerAccess")
 abstract class Settings {
+    static final String CHANNEL_ID_NEWS = "blackeagle.sp2dobczyceapp.channels.news";
+    static final String CHANNEL_ID_LESSON_TIME = "blackeagle.sp2dobczyceapp.channels.lessontime";
+
     static final int REFRESH_TIME_IN_MILLIS = 2 * 60 * 60 * 1000;
+
     static final int DARK_MODE_ALWAYS = 2;
     static final int DARK_MODE_AUTO = 1;
     static final int DARK_MODE_NEVER = 0;
     static final int NOTIFICATION_ID_UPDATE_RESULT = 1;
     static final int NOTIFICATION_ID_LESSON_FINISH = 2;
     static boolean isReady = false;
+    static boolean showBadges = false;
     static boolean isTeacher;
     static String className = "";
     static boolean canNotify;
@@ -105,6 +113,7 @@ abstract class Settings {
             luckyNumber1 = preferences.getInt("luckyNumber1", 0);
             luckyNumber2 = preferences.getInt("luckyNumber2", 0);
             updateDate = preferences.getLong("updateDate", 0);
+            showBadges = preferences.getBoolean("showBadges", false);
 
 
             if (isReady) {
@@ -140,6 +149,7 @@ abstract class Settings {
             editor.putInt("luckyNumber1", luckyNumber1);
             editor.putInt("luckyNumber2", luckyNumber2);
             editor.putLong("updateDate", updateDate);
+            editor.putBoolean("showBadges", showBadges);
 
             if (isReady)
                 editor.putInt("lastVersion", 1);
@@ -181,7 +191,7 @@ abstract class Settings {
     static boolean isOnline(Context context) {
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+            return cm != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
         } catch (Exception e) {
             return false;
         }
@@ -251,10 +261,11 @@ abstract class Settings {
         }
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     static boolean isPowerSaveMode(Context context) {
-        return ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).isPowerSaveMode();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            return false;
+        PowerManager service = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        return service != null && service.isPowerSaveMode();
     }
 
     static Drawable getDyedDrawable(Context context, @DrawableRes int id, boolean isDarkTheme) {
@@ -282,6 +293,32 @@ abstract class Settings {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    static void createNotificationChannels(Context context) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O)
+            return;
+
+        NotificationManager manager = context.getSystemService(NotificationManager.class);
+        if (manager == null)
+            return;
+
+        NotificationChannel newsChannel = new NotificationChannel(CHANNEL_ID_NEWS, "Kanał zastępstw", NotificationManager.IMPORTANCE_DEFAULT);
+        newsChannel.setShowBadge(true);
+        newsChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        newsChannel.enableVibration(true);
+        newsChannel.enableLights(true);
+
+        NotificationChannel lessonTimeChannel = new NotificationChannel(CHANNEL_ID_LESSON_TIME, "Kanał odliczania", NotificationManager.IMPORTANCE_MIN);
+        lessonTimeChannel.setShowBadge(false);
+        lessonTimeChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        lessonTimeChannel.enableVibration(false);
+        lessonTimeChannel.enableLights(false);
+
+        ArrayList<NotificationChannel> list = new ArrayList<>();
+        list.add(newsChannel);
+        list.add(lessonTimeChannel);
+        manager.createNotificationChannels(list);
     }
 
     interface OnSettingsChangeListener {

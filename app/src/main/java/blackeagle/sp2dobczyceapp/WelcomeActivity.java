@@ -46,12 +46,12 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         myToolbar.setTitleTextColor(Settings.getColor(this, R.color.white));
         myToolbar.setTitle(R.string.welcome_text);
         setSupportActionBar(myToolbar);
 
-        mainLayout = ((LinearLayout) findViewById(R.id.main_layout));
+        mainLayout = findViewById(R.id.main_layout);
 
         disableOrientationChanges();
 
@@ -164,7 +164,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     case PAGE_CHOOSE_CLASS: {
                         view = inflater.inflate(R.layout.choose_class_layout, mainLayout);
 
-                        final Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
+                        final Spinner spinner = view.findViewById(R.id.spinner);
 
                         ((Switch) view.findViewById(R.id.teacher_switch)).setChecked(true);
                         ((Switch) view.findViewById(R.id.teacher_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -221,7 +221,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     }
                     case PAGE_CHOOSE_NUMBER: {
                         view = inflater.inflate(R.layout.choose_number_layout, mainLayout);
-                        final Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
+                        final Spinner spinner = view.findViewById(R.id.spinner);
 
                         ArrayList<String> list = new ArrayList<>(30);
                         for (int i = 0; i < 30; i++)
@@ -250,25 +250,6 @@ public class WelcomeActivity extends AppCompatActivity {
                         });
                         break;
                     }
-                    /*case PAGE_FINAL:
-                        view = inflater.inflate(R.layout.final_layout, mainLayout);
-                        view.findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Settings.className = selectedClass;
-                                Settings.isTeacher = isTeacher;
-                                Settings.isReady = true;
-                                Settings.saveSettings(WelcomeActivity.this);
-                                if (isDownloading) {
-                                    setNextPage(PAGE_LOADING);
-                                } else {
-                                    UpdateService.startService(getApplicationContex());
-                                    finish();
-                                    startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
-                                }
-                            }
-                        });
-                        break;*/
                 }
                 Animation anim = new AlphaAnimation(0.f, 1.f);
                 anim.setDuration(300);

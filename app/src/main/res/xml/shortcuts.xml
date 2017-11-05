@@ -1,0 +1,17 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_school"
+        android:shortcutDisabledMessage="@string/timetable"
+        android:shortcutId="openLessonPlanId"
+        android:shortcutLongLabel="@string/timetable"
+        android:shortcutShortLabel="@string/timetable"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="blackeagle.sp2dobczyceapp.LessonPlanActivity"
+            android:targetPackage="blackeagle.sp2dobczyceapp" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

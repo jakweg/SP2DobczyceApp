@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import java.util.Calendar;
 
@@ -18,8 +19,9 @@ public class LessonFinishService extends Service {
     private static boolean isStarting = false;
     Thread workingThread;
     Notification notification;
-    Notification.Builder builder;
+    NotificationCompat.Builder builder;
     int[] lessonCounts;
+    private boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     private LessonTimeManager.LessonState lessonState;
     private int timeToFinishLesson = 0;
     private AlarmManager alarmMgr;
@@ -100,6 +102,7 @@ public class LessonFinishService extends Service {
     public int onStartCommand(Intent serviceIntent, int flags, int startId) {
         thisService = this;
         Settings.loadSettings(this);
+        Settings.createNotificationChannels(getApplicationContext());
         alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         runNotification();
@@ -173,16 +176,21 @@ public class LessonFinishService extends Service {
     }
 
     private void cancelNotification() {
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-                .cancel(Settings.NOTIFICATION_ID_LESSON_FINISH);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null)
+            manager.cancel(Settings.NOTIFICATION_ID_LESSON_FINISH);
     }
 
     private void updateNotification() {
         if (notification == null) {
-            builder = new Notification.Builder(this);
-            builder.setSmallIcon(R.drawable.ic_school);
-            builder.setPriority(Notification.PRIORITY_HIGH);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (useOldNotification) {
+                //noinspection deprecation
+                builder = new NotificationCompat.Builder(this);
+                builder.setPriority(Notification.PRIORITY_HIGH);
+            } else
+                builder = new NotificationCompat.Builder(this, Settings.CHANNEL_ID_LESSON_TIME);
+            builder.setSmallIcon(R.drawable.ic_school_png);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && useOldNotification) {
                 builder.setColor(Settings.getColor(this, R.color.colorPrimary));
                 builder.setCategory(Notification.CATEGORY_ALARM);
                 builder.setVisibility(Notification.VISIBILITY_PUBLIC);
@@ -206,6 +214,7 @@ public class LessonFinishService extends Service {
 
         notification = builder.build();
         notification.flags |= Notification.FLAG_NO_CLEAR;
+        //noinspection ConstantConditions
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
                 .notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
     }

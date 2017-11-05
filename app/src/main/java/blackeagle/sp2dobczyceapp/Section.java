@@ -26,7 +26,7 @@ class Section {
     }
 
     @SuppressLint("SetTextI18n")
-    static Section createSection(Context context, String section, int size, final LinearLayout layout, boolean darkTheme) {
+    static void createSection(Context context, String section, int size, final LinearLayout layout, boolean darkTheme) {
         final Section thisSection = new Section();
 
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -44,9 +44,9 @@ class Section {
 
         StringBuilder builder = new StringBuilder();
         int count = 0;
-        String[] lines = section.split("<br  />");
+        String[] lines = section.split("<br {2}/>");
         if (lines.length == 1) {
-            lines = section.split("<br />");
+            lines = section.split("<br {2}/>");
         }
         for (String line : lines) {
             if (UpdateManager.containsSubstituteForUser(line)) {
@@ -63,7 +63,7 @@ class Section {
         String date = getDate(lines.length > 0 ? lines[0] : null);
         String dayName = lines.length > 1 ? lines[1] : "";
 
-        final TextView titleView = (TextView) returnValue.findViewById(R.id.title);
+        final TextView titleView = returnValue.findViewById(R.id.title);
 
         if (isDayName(dayName) && date != null) {
             titleView.setText(
@@ -76,7 +76,7 @@ class Section {
         @SuppressWarnings("deprecation")
         CharSequence content = Html.fromHtml(builder.toString());
 
-        final TextView contentView = (TextView) returnValue.findViewById(R.id.content);
+        final TextView contentView = returnValue.findViewById(R.id.content);
         contentView.setText(content);
         titleView.measure(0, 0);
         contentView.measure(0, 0);
@@ -91,7 +91,7 @@ class Section {
             }
         });
 
-        final ImageView image = (ImageView) returnValue.findViewById(R.id.image);
+        final ImageView image = returnValue.findViewById(R.id.image);
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +158,6 @@ class Section {
         layout.addView(returnValue);
         layout.addView(createSeparator(context));
 
-        return thisSection;
     }
 
     @Nullable

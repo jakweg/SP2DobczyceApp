@@ -16,7 +16,7 @@
     <string name="something_is_new2" formatted="false">✔ Zaktualizowano (%d nowych aktualności) 😊</string>
     <string name="updated">✔ Zaktualizowano</string>
     <string name="nothing_is_new">Nic nowego 😐</string>
-    <string name="lesson_plan">Plan lekcji</string>
+    <string name="timetable">Plan lekcji</string>
     <string name="settings">Ustawienia</string>
     <string name="no_class_selected">Nie wybrano klasy 😐</string>
     <string name="set_class_now">Wybierz teraz</string>

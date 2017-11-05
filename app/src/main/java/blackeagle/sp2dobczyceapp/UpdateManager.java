@@ -11,12 +11,15 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 class UpdateManager {
 
@@ -39,7 +42,7 @@ class UpdateManager {
 
                 int count = 0;
                 for (String day : result.days) {
-                    for (String line : day.split("<br  />")) {
+                    for (String line : day.split("<br {2}/>")) {
                         if (containsSubstituteForUser(line)) {
                             count++;
                         }
@@ -83,7 +86,7 @@ class UpdateManager {
 
                 ArrayList<String> substitutesList = new ArrayList<>();
                 for (String day : days) {
-                    for (String line : day.split("<br  />")) {
+                    for (String line : day.split("<br {2}/>")) {
                         if (containsSubstituteForUser(line)) {
                             substitutesList.add(line);
                         }
@@ -91,6 +94,12 @@ class UpdateManager {
                 }
 
                 result.allNewsCount = substitutesList.size();
+                try {
+                    if (Settings.showBadges)
+                        ShortcutBadger.applyCount(context.getApplicationContext(), result.allNewsCount);
+                    else
+                        ShortcutBadger.removeCount(context.getApplicationContext());
+                } catch (Exception e) {/*xd*/ }
 
                 try {
                     String lastContent = "";
@@ -176,7 +185,7 @@ class UpdateManager {
     @Nullable
     private static String normalizeSection(String str) {
         StringBuilder builder = new StringBuilder();
-        final char[] chars = str.replaceAll("<br  />", "<br />").replaceAll("\t- ", "-").replaceAll("\t", " ").toCharArray();
+        final char[] chars = str.replaceAll("<br {2}/>", "<br />").replaceAll("\t- ", "-").replaceAll("\t", " ").toCharArray();
         boolean isSpace = false;
         boolean wasText = false;
         for (char c : chars) {
@@ -219,6 +228,8 @@ class UpdateManager {
             }
 
             in.close();
+        } catch (FileNotFoundException e) {
+            //empty
         } catch (Exception e) {
             e.printStackTrace();
         }
