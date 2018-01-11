@@ -1,5 +1,6 @@
 package blackeagle.sp2dobczyceapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 
+@SuppressLint("ExportedPreferenceActivity")
 public class SettingsActivity extends PreferenceActivity implements Settings.OnSettingsChangeListener {
 
 
@@ -228,7 +230,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
             try {
                 CheckBoxPreference showBadgesCheckBox = new CheckBoxPreference(context);
-                showBadgesCheckBox.setTitle("Liczbę zastępstw na pulpicie");
+                showBadgesCheckBox.setTitle("Liczba zastępstw na pulpicie");
                 showBadgesCheckBox.setKey("showBadges");
                 if (ShortcutBadger.isBadgeCounterSupported(context.getApplicationContext()))
                     showBadgesCheckBox.setSummary("Pokazuj liczbę zastępstw na ikonie w ekranie głównym");

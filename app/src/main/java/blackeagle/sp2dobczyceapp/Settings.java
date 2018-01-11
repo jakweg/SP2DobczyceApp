@@ -74,8 +74,13 @@ abstract class Settings {
             case DARK_MODE_NEVER:
                 return false;
             case DARK_MODE_AUTO:
-                int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                return hour > 19 || hour < 7;
+                Calendar c = Calendar.getInstance();
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int month = c.get(Calendar.MONTH);
+                if (month < 4 || month > 9)
+                    return hour > 17 || hour < 7;
+                else
+                    return hour > 19 || hour < 7;
             default:
                 return false;
         }
