@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     UpdateManager.Result refreshResult = null;
     boolean isMeasured = false;
     boolean ignoreNoUpdate = false;
+    boolean isDarkTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-            if (Settings.applyNowDarkTheme())
+            if (isDarkTheme = Settings.applyNowDarkTheme())
                 setTheme(R.style.DarkTheme);
 
             setContentView(R.layout.activity_main);
@@ -140,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (isDarkTheme != Settings.applyNowDarkTheme()) {
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case OPEN_SETTINGS_ID:
@@ -200,6 +210,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void createViewByResult() {
+        if (isDarkTheme != Settings.applyNowDarkTheme()) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
         if (refreshResult == null)
             return;
         runOnUiThread(new Runnable() {
