@@ -77,10 +77,12 @@ abstract class Settings {
                 Calendar c = Calendar.getInstance();
                 int hour = c.get(Calendar.HOUR_OF_DAY);
                 int month = c.get(Calendar.MONTH);
-                if (month < 4 || month > 9)
-                    return hour > 17 || hour < 7;
+                if (month < 2 || month > 9)
+                    return hour > 16 || hour < 7;
+                else if (month < 4 || month > 7)
+                    return hour > 18 || hour < 7;
                 else
-                    return hour > 19 || hour < 7;
+                    return hour > 20 || hour < 7;
             default:
                 return false;
         }
