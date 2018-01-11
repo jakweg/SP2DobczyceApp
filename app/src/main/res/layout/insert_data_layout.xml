@@ -105,7 +105,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:hint="69"
+                android:hint="503"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
@@ -201,13 +201,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:hint="69"
+                android:hint="503"
                 android:inputType="textAutoComplete"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
     </LinearLayout>
 
     <Button
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
