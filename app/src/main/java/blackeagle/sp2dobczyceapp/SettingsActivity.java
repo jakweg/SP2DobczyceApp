@@ -57,7 +57,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
         try {
             ShortcutBadger.removeCount(getApplicationContext());
         } catch (Exception e) {/*xd*/ }
-        LessonFinishService.stopService();
+        LessonFinishService.stopService(this);
         LessonFinishService.startService(getApplicationContext());
         LessonPlanWidget.refreshWidgets(getApplicationContext());
         returnData.putExtra("changedClass", true);
@@ -229,23 +229,22 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             category.addPreference(darkThemeList);
 
             try {
-                CheckBoxPreference showBadgesCheckBox = new CheckBoxPreference(context);
-                showBadgesCheckBox.setTitle("Liczba zastępstw na pulpicie");
-                showBadgesCheckBox.setKey("showBadges");
-                if (ShortcutBadger.isBadgeCounterSupported(context.getApplicationContext()))
+                if (ShortcutBadger.isBadgeCounterSupported(context.getApplicationContext())) {
+                    CheckBoxPreference showBadgesCheckBox = new CheckBoxPreference(context);
+                    showBadgesCheckBox.setTitle("Liczba zastępstw na pulpicie");
+                    showBadgesCheckBox.setKey("showBadges");
                     showBadgesCheckBox.setSummary("Pokazuj liczbę zastępstw na ikonie w ekranie głównym");
-                else
-                    showBadgesCheckBox.setSummary("Obecna strona główna nie wspiera tej funkcji");
-                showBadgesCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        Settings.showBadges = (boolean) newValue;
-                        if (!((boolean) newValue))
-                            ShortcutBadger.removeCount(context.getApplicationContext());
-                        return true;
-                    }
-                });
-                category.addPreference(showBadgesCheckBox);
+                    showBadgesCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            Settings.showBadges = (boolean) newValue;
+                            if (!((boolean) newValue))
+                                ShortcutBadger.removeCount(context.getApplicationContext());
+                            return true;
+                        }
+                    });
+                    category.addPreference(showBadgesCheckBox);
+                }
             } catch (Exception e) {
                 //xd
             }
@@ -257,7 +256,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
             CheckBoxPreference allowWorkInBgCheckBox = new CheckBoxPreference(context);
             allowWorkInBgCheckBox.setDefaultValue(true);
             allowWorkInBgCheckBox.setKey("canWorkInBackground");
-            allowWorkInBgCheckBox.setTitle("Zazwalaj na działanie w tle");
+            allowWorkInBgCheckBox.setTitle("Zezwalaj na działanie w tle");
             allowWorkInBgCheckBox.setSummaryOff("Nie dostaniesz powiadomień");
             allowWorkInBgCheckBox.setSummaryOn("Będziesz dostawać powiadomienia");
             allowWorkInBgCheckBox.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_sync, isDarkTheme));
@@ -267,7 +266,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                     if (Settings.canWorkInBackground = (boolean) newValue)
                         UpdateService.startService(context);
                     else
-                        UpdateService.stopService();
+                        UpdateService.stopService(context);
                     return true;
                 }
             });
@@ -316,7 +315,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                     if (Settings.showFinishTimeNotification = (boolean) newValue)
                         LessonFinishService.startService(context);
                     else
-                        LessonFinishService.stopService();
+                        LessonFinishService.stopService(context);
                     return true;
                 }
             });
@@ -350,7 +349,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
             Preference gitPreference = new Preference(context);
             gitPreference.setIcon(Settings.getDyedDrawable(context, R.drawable.ic_developer, isDarkTheme));
-            gitPreference.setTitle("Otwórz Github");
+            gitPreference.setTitle("Otwórz GitHub");
             gitPreference.setSummary(R.string.about_github);
             gitPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override

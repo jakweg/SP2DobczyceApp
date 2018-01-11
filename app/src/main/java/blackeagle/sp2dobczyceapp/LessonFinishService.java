@@ -6,17 +6,22 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.Calendar;
 
 public class LessonFinishService extends Service {
-    private static LessonFinishService thisService = null;
+    private final static String ACTION_STOP_SERVICE = "LessonFinishService.stop";
+
     private static boolean isStarting = false;
+    private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
     Thread workingThread;
     Notification notification;
     NotificationCompat.Builder builder;
@@ -25,16 +30,16 @@ public class LessonFinishService extends Service {
     private LessonTimeManager.LessonState lessonState;
     private int timeToFinishLesson = 0;
     private AlarmManager alarmMgr;
+    private BroadcastReceiver stopListener;
 
     static void startService(Context context) {
         if (isStarting)
             return;
         isStarting = true;
         try {
+            stopService(context);
             Settings.loadSettings(context);
             if (!Settings.isReady)
-                return;
-            if (thisService != null)
                 return;
             if (!Settings.showFinishTimeNotification)
                 return;
@@ -44,11 +49,8 @@ public class LessonFinishService extends Service {
         }
     }
 
-    static void stopService() {
-        if (thisService == null)
-            return;
-        thisService.stopSelf();
-        thisService = null;
+    static void stopService(Context context) {
+        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcastSync(new Intent(ACTION_STOP_SERVICE));
     }
 
     private static boolean isWeekend() {
@@ -70,8 +72,6 @@ public class LessonFinishService extends Service {
 
     @SuppressLint("SwitchIntDef")
     private void restartServiceWhenNeeded() {
-        if (thisService == null)
-            return;
         Calendar calendar = Calendar.getInstance();
         int currentMinute = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -95,13 +95,24 @@ public class LessonFinishService extends Service {
         calendar.set(Calendar.SECOND, 0);
 
         alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), getAlarmIntent());
-        stopService();
+        stopSelf();
     }
 
     @Override
     public int onStartCommand(Intent serviceIntent, int flags, int startId) {
-        thisService = this;
         Settings.loadSettings(this);
+        if (!Settings.showFinishTimeNotification) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        stopListener = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                stopSelf();
+            }
+        };
+        localBroadcastManager.registerReceiver(stopListener, new IntentFilter(ACTION_STOP_SERVICE));
+
         Settings.createNotificationChannels(getApplicationContext());
         alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -241,7 +252,8 @@ public class LessonFinishService extends Service {
         if (workingThread != null)
             workingThread.interrupt();
         cancelNotification();
-        thisService = null;
+        if (stopListener != null)
+            localBroadcastManager.unregisterReceiver(stopListener);
     }
 
     @Override

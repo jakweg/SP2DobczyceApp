@@ -17,50 +17,57 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 
 public class UpdateService extends Service {
 
-    private static UpdateService thisService = null;
+    private final static String ACTION_STOP_SERVICE = "UpdateService.stop";
     private static boolean isStarting = false;
+    final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
     BroadcastReceiver networkListener;
     BroadcastReceiver batteryListener;
+    BroadcastReceiver stopListener;
 
     static void startService(Context context) {
         if (isStarting)
             return;
         try {
+            stopService(context);
             isStarting = true;
             Settings.loadSettings(context);
             if (!Settings.isReady)
                 return;
-            if (thisService != null)
-                return;
             if (!Settings.canWorkInBackground)
                 return;
-            context.startService(new Intent(context, UpdateService.class));
+            context.getApplicationContext().startService(new Intent(context, UpdateService.class));
         } finally {
             isStarting = false;
         }
     }
 
-    static void stopService() {
-        if (thisService == null)
-            return;
-        thisService.stopSelf();
-        thisService = null;
+    static void stopService(Context context) {
+        LocalBroadcastManager mgr = LocalBroadcastManager.getInstance(context.getApplicationContext());
+        mgr.sendBroadcastSync(new Intent(ACTION_STOP_SERVICE));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        thisService = this;
         Settings.loadSettings(this);
 
         Settings.createNotificationChannels(getApplicationContext());
 
         if (!Settings.canWorkInBackground) {
-            stopService();
+            stopSelf();
             return START_NOT_STICKY;
         }
+
+        stopListener = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                stopSelf();
+            }
+        };
+        localBroadcastManager.registerReceiver(stopListener, new IntentFilter(ACTION_STOP_SERVICE));
 
         if (Settings.updateDate + Settings.REFRESH_TIME_IN_MILLIS < System.currentTimeMillis())
             makeUpdate();
@@ -109,7 +116,9 @@ public class UpdateService extends Service {
             if (batteryListener != null)
                 unregisterReceiver(batteryListener);
             batteryListener = null;
-            thisService = null;
+            if (stopListener != null)
+                localBroadcastManager.unregisterReceiver(stopListener);
+            stopListener = null;
         } catch (Exception e) {
             //empty
         }
@@ -129,7 +138,7 @@ public class UpdateService extends Service {
             alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis,
                     PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
         }
-        stopService();
+        stopSelf();
     }
 
     private void makeUpdate() {
@@ -153,7 +162,7 @@ public class UpdateService extends Service {
                 } catch (Exception e) {
                     //empty
                 }
-                stopService();
+                stopSelf();
             }
         }).start();
     }
