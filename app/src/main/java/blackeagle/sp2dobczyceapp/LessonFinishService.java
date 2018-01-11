@@ -26,6 +26,7 @@ public class LessonFinishService extends Service {
     Notification notification;
     NotificationCompat.Builder builder;
     int[] lessonCounts;
+    boolean isStarted = false;
     private boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     private LessonTimeManager.LessonState lessonState;
     private int timeToFinishLesson = 0;
@@ -37,7 +38,6 @@ public class LessonFinishService extends Service {
             return;
         isStarting = true;
         try {
-            stopService(context);
             Settings.loadSettings(context);
             if (!Settings.isReady)
                 return;
@@ -100,6 +100,9 @@ public class LessonFinishService extends Service {
 
     @Override
     public int onStartCommand(Intent serviceIntent, int flags, int startId) {
+        if (isStarted)
+            return START_STICKY;
+        isStarted = true;
         Settings.loadSettings(this);
         if (!Settings.showFinishTimeNotification) {
             stopSelf();

@@ -27,12 +27,12 @@ public class UpdateService extends Service {
     BroadcastReceiver networkListener;
     BroadcastReceiver batteryListener;
     BroadcastReceiver stopListener;
+    boolean isStarted = false;
 
     static void startService(Context context) {
         if (isStarting)
             return;
         try {
-            stopService(context);
             isStarting = true;
             Settings.loadSettings(context);
             if (!Settings.isReady)
@@ -52,6 +52,9 @@ public class UpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (isStarted)
+            return START_STICKY;
+        isStarted = true;
         Settings.loadSettings(this);
 
         Settings.createNotificationChannels(getApplicationContext());
