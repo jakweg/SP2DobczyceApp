@@ -276,6 +276,10 @@ class UpdateManager {
         return false;
     }
 
+    static boolean containsFormallyClothesRequirement(String section) {
+        return section.contains("strój apelowy");
+    }
+
     static String getNewsUpdateInfo(int count) {
         if (count == 0)
             return "Brak nowych zastępstw dla ciebie";
@@ -346,87 +350,4 @@ class UpdateManager {
             parent.addView(layout);
         }
     }
-
-    /*@Deprecated
-    @NonNull
-    static ResultOld updateOld(Context context){
-        ResultOld result = new ResultOld();
-        if (!Settings.isOnline(context)){
-            result.success = false;
-            return result;
-        }
-        try {
-            String html = LessonPlanManager.getHtml("http://sp2dobczyce.pl/zastepstwa/");
-            String searched = "<tbody>";
-            html = html.substring(html.indexOf(searched) + searched.length(), html.indexOf("</tbody>"));
-
-            String[] days = html.split("</tr>");
-            DaySubstitutes currentDay = null;
-            for (String day : days) {
-                ArrayList<String> visibleText = LessonPlanManager.getVisibleText(day);
-                if (visibleText.size() >= 7) {
-                    int i = 0;
-                    for (String s :
-                            visibleText) {
-                        Log.d("NOPE", String.valueOf(i++) + " : " + s);
-                    }
-                    if (!visibleText.get(0).equals("&nbsp;")) {
-                        if (currentDay != null)
-                            result.dayList.add(currentDay);
-                        currentDay = new DaySubstitutes();
-                        currentDay.date = visibleText.get(0);
-                        currentDay.dayOfWeek = visibleText.get(1);
-                       // currentDay.absentTeacher = visibleText.get(1);
-                    }
-                    if (visibleText.get(2).equals("&nbsp;"))
-                        continue;
-                    SingleSubstitutes single = new SingleSubstitutes();
-                    single.lesson = Integer.valueOf(visibleText.get(2));
-                    single.className = visibleText.get(3);
-                    single.subject = visibleText.get(4);
-                    single.newTeacher = visibleText.get(5);
-                    single.type = visibleText.get(6);
-                    if (currentDay != null)
-                        currentDay.subtitutesList.add(single);
-                }
-
-            }
-            if(currentDay != null)
-                result.dayList.add(currentDay);
-
-            //NTODO save to file
-            result.success = true;
-        } catch (Exception e){
-            e.printStackTrace();
-            result.success = false;
-        }
-        return result;
-    }
-
-    @Deprecated
-    static class ResultOld {
-        boolean success;
-        List<DaySubstitutes> dayList = new ArrayList<>();
-    }
-    @Deprecated
-    static class DaySubstitutes {
-        String date = "";
-        String dayOfWeek = "";
-        String absentTeacher = "";
-        List<SingleSubstitutes> subtitutesList = new ArrayList<>();
-    }
-    @Deprecated
-    static class SingleSubstitutes {
-        int lesson = -1;
-        String className = "";
-        String subject = "";
-        String newTeacher = "";
-        String type = "";
-
-        @Override
-        public String toString() {
-            return String.format("Na %s lekcji w klasie %s bedzie %s z %s jako %s",
-                    lesson, className, subject, newTeacher, type);
-        }
-    }*/
 }

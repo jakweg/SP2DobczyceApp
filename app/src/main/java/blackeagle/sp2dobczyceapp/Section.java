@@ -18,8 +18,8 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 class Section {
+    private static boolean isAnimating = false;
     private int maxHeight;
-    private boolean isAnimating = false;
     private boolean isShown = true;
 
     private Section() {
@@ -28,6 +28,7 @@ class Section {
     @SuppressLint("SetTextI18n")
     static void createSection(Context context, String section, int size, final LinearLayout layout, boolean darkTheme) {
         final Section thisSection = new Section();
+        isAnimating = false;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         @SuppressLint("InflateParams")
@@ -42,7 +43,7 @@ class Section {
         returnValue.setBackgroundResource(darkTheme ? R.drawable.section_background_dark : R.drawable.section_background);
         returnValue.measure(0, 0);
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder textBuilder = new StringBuilder();
         int count = 0;
         String[] lines = section.split("<br {2}/>");
         if (lines.length == 1) {
@@ -50,14 +51,14 @@ class Section {
         }
         for (String line : lines) {
             if (UpdateManager.containsSubstituteForUser(line)) {
-                builder.append("<b>");
-                builder.append(line);
-                builder.append("</b>");
+                textBuilder.append("<b>");
+                textBuilder.append(line);
+                textBuilder.append("</b>");
                 count++;
             } else {
-                builder.append(line);
+                textBuilder.append(line);
             }
-            builder.append("<br/>");
+            textBuilder.append("<br/>");
         }
 
         String date = getDate(lines.length > 0 ? lines[0] : null);
@@ -65,16 +66,24 @@ class Section {
 
         final TextView titleView = returnValue.findViewById(R.id.title);
 
+        StringBuilder titleBuilder = new StringBuilder(100);
         if (isDayName(dayName) && date != null) {
-            titleView.setText(
-                    String.format("%s (%s)\n%s",
-                            dayName, date, UpdateManager.getUpdateInfo(count)));
+            titleBuilder.append(dayName);
+            titleBuilder.append(" (");
+            titleBuilder.append(date);
+            titleBuilder.append(")\n");
+            titleBuilder.append(UpdateManager.getUpdateInfo(count));
         } else {
-            titleView.setText("Informacja\n" + UpdateManager.getUpdateInfo(count));
+            titleBuilder.append("Informacja\n");
+            titleBuilder.append(UpdateManager.getUpdateInfo(count));
         }
 
+        if (UpdateManager.containsFormallyClothesRequirement(section))
+            titleBuilder.append("\nW tym dniu obowiązuje strój apelowy");
+        titleView.setText(titleBuilder.toString());
+
         @SuppressWarnings("deprecation")
-        CharSequence content = Html.fromHtml(builder.toString());
+        CharSequence content = Html.fromHtml(textBuilder.toString());
 
         final TextView contentView = returnValue.findViewById(R.id.content);
         contentView.setText(content);
@@ -95,7 +104,7 @@ class Section {
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (thisSection.isAnimating)
+                if (isAnimating)
                     return;
                 Animation animation;
                 if (thisSection.isShown) {
@@ -132,12 +141,12 @@ class Section {
                 animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-                        thisSection.isAnimating = true;
+                        isAnimating = true;
                     }
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        thisSection.isAnimating = false;
+                        isAnimating = false;
                     }
 
                     @Override
