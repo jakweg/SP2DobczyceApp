@@ -65,9 +65,8 @@ public class LessonFinishService extends Service {
     }
 
     private PendingIntent getAlarmIntent() {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("sId", AlarmReceiver.SERVICE_ID_FINISH_TIME);
-        return PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent intent = new Intent(this, LessonFinishService.class);
+        return PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @SuppressLint("SwitchIntDef")

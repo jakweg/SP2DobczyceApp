@@ -126,6 +126,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        item = menu.add("Lista przedmiotów");
+        item.setIcon(R.drawable.ic_toc);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivity(new Intent(MainActivity.this, AverageMarkActivity.class));
+                return true;
+            }
+        });
+
         item = menu.add("O aplikacji");
         item.setIcon(R.drawable.ic_info);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);

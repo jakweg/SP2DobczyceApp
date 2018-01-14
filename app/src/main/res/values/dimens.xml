@@ -2,4 +2,6 @@
 <resources>
     <dimen name="sectionMargin">5dp</dimen>
     <dimen name="separator_height">10dp</dimen>
+    <integer name="TAG_POSITION">3</integer>
+    <integer name="TAG_TEXT_VIEW">4</integer>
 </resources>

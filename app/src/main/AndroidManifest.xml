@@ -98,11 +98,9 @@
         </receiver>
 
         <activity android:name=".AboutActivity" />
-
-        <receiver
-            android:name=".AlarmReceiver"
-            android:enabled="true"
-            android:process=":remote" />
+        <activity
+            android:name=".AverageMarkActivity"
+            android:label="@string/average_activity_title" />
     </application>
 
 </manifest>

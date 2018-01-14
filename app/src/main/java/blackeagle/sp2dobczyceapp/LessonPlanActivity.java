@@ -54,7 +54,7 @@ public class LessonPlanActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_lesson_plan);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (savedInstanceState == null)
@@ -81,7 +81,7 @@ public class LessonPlanActivity extends AppCompatActivity {
         }
         createTabbedView();
 
-        final LinearLayout lessonTimeLayout = (LinearLayout) findViewById(R.id.lesson_time_layout);
+        final LinearLayout lessonTimeLayout = findViewById(R.id.lesson_time_layout);
         lessonTimeLayout.setBackgroundColor(Settings.getColor(this,
                 isDarkTheme ? R.color.backgroundDark : R.color.background));
         LessonTimeManager.makeLayout(this, lessonTimeLayout);
@@ -142,7 +142,7 @@ public class LessonPlanActivity extends AppCompatActivity {
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(
                 getSupportFragmentManager(), thisPlan);
 
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -162,7 +162,7 @@ public class LessonPlanActivity extends AppCompatActivity {
         });
 
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         if (currentPage == -1) {
@@ -195,6 +195,7 @@ public class LessonPlanActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putString("name", lessonPlanName);
         outState.putInt("page", currentPage);
     }

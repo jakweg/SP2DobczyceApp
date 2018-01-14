@@ -23,7 +23,8 @@ public class UpdateService extends Service {
 
     private final static String ACTION_STOP_SERVICE = "UpdateService.stop";
     private static boolean isStarting = false;
-    final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+    LocalBroadcastManager localBroadcastManager = null;
+    AlarmManager alarmManager = null;
     BroadcastReceiver networkListener;
     BroadcastReceiver batteryListener;
     BroadcastReceiver stopListener;
@@ -56,6 +57,9 @@ public class UpdateService extends Service {
             return START_STICKY;
         isStarted = true;
         Settings.loadSettings(this);
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Settings.createNotificationChannels(getApplicationContext());
 
@@ -128,20 +132,21 @@ public class UpdateService extends Service {
     }
 
     private void restartWhenNeeded() {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("sId", AlarmReceiver.SERVICE_ID_UPDATE);
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             long triggerAtMillis = Settings.updateDate + Settings.REFRESH_TIME_IN_MILLIS;
             long now = System.currentTimeMillis();
             if (now > triggerAtMillis)
-                triggerAtMillis = now + Settings.REFRESH_TIME_IN_MILLIS;
+                restartAt(now + Settings.REFRESH_TIME_IN_MILLIS);
 
-            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis,
-                    PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
         }
         stopSelf();
+    }
+
+    private void restartAt(long millis) {
+        Intent intent = new Intent(this, UpdateService.class);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, millis,
+                PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
     private void makeUpdate() {
