@@ -21,17 +21,18 @@ public class LessonFinishService extends Service {
     private final static String ACTION_STOP_SERVICE = "LessonFinishService.stop";
 
     private static boolean isStarting = false;
-    private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
     Thread workingThread;
     Notification notification;
     NotificationCompat.Builder builder;
     int[] lessonCounts;
     boolean isStarted = false;
+    private LocalBroadcastManager localBroadcastManager;
     private boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     private LessonTimeManager.LessonState lessonState;
     private int timeToFinishLesson = 0;
     private AlarmManager alarmMgr;
     private BroadcastReceiver stopListener;
+    private BroadcastReceiver screenOnListener;
 
     static void startService(Context context) {
         if (isStarting)
@@ -102,6 +103,7 @@ public class LessonFinishService extends Service {
         if (isStarted)
             return START_STICKY;
         isStarted = true;
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
         Settings.loadSettings(this);
         if (!Settings.showFinishTimeNotification) {
             stopSelf();
@@ -152,6 +154,13 @@ public class LessonFinishService extends Service {
             @Override
             public void run() {
                 try {
+                    screenOnListener = new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            updateNotification();
+                        }
+                    };
+                    registerReceiver(screenOnListener, new IntentFilter(Intent.ACTION_SCREEN_ON));
                     lessonCounts = LessonPlanManager.getLessonsCount(LessonFinishService.this);
 
                     if (sleepToLessons())
@@ -253,9 +262,14 @@ public class LessonFinishService extends Service {
         super.onDestroy();
         if (workingThread != null)
             workingThread.interrupt();
+        workingThread = null;
         cancelNotification();
         if (stopListener != null)
             localBroadcastManager.unregisterReceiver(stopListener);
+        localBroadcastManager = null;
+        if (screenOnListener != null)
+            unregisterReceiver(screenOnListener);
+        screenOnListener = null;
     }
 
     @Override

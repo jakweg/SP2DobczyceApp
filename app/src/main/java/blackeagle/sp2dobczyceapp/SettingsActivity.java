@@ -130,7 +130,7 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (newValue instanceof String)
                         Settings.className = (String) newValue;
-                    else {
+                    else if (!(newValue instanceof Boolean)) {
                         Settings.isTeacher = (boolean) newValue;
                         Settings.className = Settings.isTeacher ?
                                 LessonPlanManager.teacherList.get(0) : LessonPlanManager.classesList.get(0);

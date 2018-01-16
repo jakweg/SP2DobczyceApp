@@ -85,6 +85,7 @@ public class UpdateService extends Service {
     }
 
     private void startWaitingForNetwork() {
+        restartAt(System.currentTimeMillis() + Settings.REFRESH_TIME_IN_MILLIS);//tak dla bezpieczeństwa
         networkListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -100,6 +101,7 @@ public class UpdateService extends Service {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private void startWaitingForBattery() {
+        restartAt(System.currentTimeMillis() + Settings.REFRESH_TIME_IN_MILLIS);//tak dla bezpieczeństwa
         batteryListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -138,6 +140,8 @@ public class UpdateService extends Service {
             long now = System.currentTimeMillis();
             if (now > triggerAtMillis)
                 restartAt(now + Settings.REFRESH_TIME_IN_MILLIS);
+            else
+                restartAt(triggerAtMillis);
 
         }
         stopSelf();

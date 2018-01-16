@@ -60,7 +60,7 @@ abstract class Settings {
     }
 
     static boolean isNumberSelected() {
-        return usersNumber != -1;
+        return usersNumber > 0;
     }
 
     static boolean isClassSelected() {
@@ -117,8 +117,8 @@ abstract class Settings {
             showFinishTimeNotification = preferences.getBoolean("showFinishTimeNotification", false);
             finishTimeDelay = Integer.valueOf(preferences.getString("finishTimeDelay", "0"));
             usersNumber = Integer.valueOf(preferences.getString("usersNumber", "0"));
-            luckyNumber1 = preferences.getInt("luckyNumber1", 0);
-            luckyNumber2 = preferences.getInt("luckyNumber2", 0);
+            luckyNumber1 = preferences.getInt("luckyNumber1", -1);
+            luckyNumber2 = preferences.getInt("luckyNumber2", -1);
             updateDate = preferences.getLong("updateDate", 0);
             showBadges = preferences.getBoolean("showBadges", false);
 

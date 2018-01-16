@@ -147,8 +147,8 @@ class UpdateManager {
                     html = html.substring(html.indexOf(searched) + searched.length(), html.indexOf("</strong></span></td>"));
 
                     if (html.contains("brak")) {
-                        Settings.luckyNumber1 = 0;
-                        Settings.luckyNumber2 = 0;
+                        Settings.luckyNumber1 = -1;
+                        Settings.luckyNumber2 = -1;
                         result.hasChangedLuckyNumbers = false;
                     } else {
                         StringBuilder builder = new StringBuilder();
@@ -168,6 +168,9 @@ class UpdateManager {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Settings.luckyNumber1 = -1;
+                    Settings.luckyNumber2 = -1;
+                    result.hasChangedLuckyNumbers = false;
                 }
                 result.success = true;
                 Settings.updateDate = System.currentTimeMillis();
