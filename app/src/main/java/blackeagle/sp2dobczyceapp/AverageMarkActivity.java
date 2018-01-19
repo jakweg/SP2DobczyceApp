@@ -137,15 +137,14 @@ public class AverageMarkActivity extends AppCompatActivity {
         subjectList.add(new SubjectInfo("Biologia", 0));
         subjectList.add(new SubjectInfo("Chemia", 0));
         subjectList.add(new SubjectInfo("Fizyka", 0));
-        subjectList.add(new SubjectInfo("Przyroda", 0));
         subjectList.add(new SubjectInfo("Informatyka", 0));
         subjectList.add(new SubjectInfo("Wychowanie fizyczne", 0));
-        subjectList.add(new SubjectInfo("Religia", 0));
         subjectList.add(new SubjectInfo("Technika", 0));
         subjectList.add(new SubjectInfo("EDB", 0));
         subjectList.add(new SubjectInfo("Zaj. artystyczne", 0));
         subjectList.add(new SubjectInfo("Plastyka", 0));
         subjectList.add(new SubjectInfo("Muzyka", 0));
+        subjectList.add(new SubjectInfo("Przyroda", 0));
         createListLayout();
     }
 

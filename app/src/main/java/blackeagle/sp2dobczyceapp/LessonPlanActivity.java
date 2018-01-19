@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -144,23 +143,6 @@ public class LessonPlanActivity extends AppCompatActivity {
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                currentPage = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -193,9 +175,11 @@ public class LessonPlanActivity extends AppCompatActivity {
             mViewPager.setCurrentItem(currentPage);
     }
 
+    @SuppressLint("MissingSuperCall")
+//jeżeli wywołam metodę super.onSaveInstance(...); wywołują się błędy!
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+        //super.onSaveInstanceState(outState);//wywołuje crash!
         outState.putString("name", lessonPlanName);
         outState.putInt("page", currentPage);
     }
@@ -458,6 +442,9 @@ public class LessonPlanActivity extends AppCompatActivity {
         private View createLessonView(ContextThemeWrapper contextThemeWrapper, int lessonNumber, int displayRules) {
             View view = View.inflate(contextThemeWrapper, R.layout.one_lesson, null);
 
+            if (lessonPlan == null)
+                return view;
+
             ((TextView) view.findViewById(R.id.lesson_name)).setText(
                     lessonPlan.getDisplayedLesson(thisDay, lessonNumber, displayRules));
 
@@ -467,9 +454,9 @@ public class LessonPlanActivity extends AppCompatActivity {
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private final LessonPlanManager.LessonPlan lessonPlan;
+        private LessonPlanManager.LessonPlan lessonPlan;
 
-        SectionsPagerAdapter(FragmentManager fm, @NonNull LessonPlanManager.LessonPlan lessonPlan) {
+        SectionsPagerAdapter(FragmentManager fm, LessonPlanManager.LessonPlan lessonPlan) {
             super(fm);
             this.lessonPlan = lessonPlan;
         }
@@ -481,7 +468,7 @@ public class LessonPlanActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 5;
+            return lessonPlan == null ? 0 : 5;
         }
 
         @Override

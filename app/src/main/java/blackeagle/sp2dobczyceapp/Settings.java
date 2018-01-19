@@ -16,9 +16,14 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.pm.ShortcutInfoCompat;
+import android.support.v4.content.pm.ShortcutManagerCompat;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,6 +35,8 @@ import java.util.Locale;
 abstract class Settings {
     static final String CHANNEL_ID_NEWS = "blackeagle.sp2dobczyceapp.channels.news";
     static final String CHANNEL_ID_LESSON_TIME = "blackeagle.sp2dobczyceapp.channels.lessontime";
+
+    static final String SHORTCUT_TIMETABLE_DYNAMIC_ID = "blackeagle.sp2dobczyce.shortcut.timetable.";
 
     static final int REFRESH_TIME_IN_MILLIS = 2 * 60 * 60 * 1000;
 
@@ -246,26 +253,57 @@ abstract class Settings {
         }
     }
 
-    public static void createShortcut(Context applicationContext, String title, @Nullable String className) {
+    public static void createShortcut(Context applicationContext, final String title, final @Nullable String className) {
         try {
-            Intent shortcutIntent = new Intent(applicationContext, LessonPlanActivity.class);
-            if (className != null) {
-                shortcutIntent.putExtra("name", className);
-            }
-            shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                createShortcutOld(applicationContext, title, className);
+            else
+                createShortcutOreo(applicationContext, title, className);
 
-            Intent addIntent = new Intent();
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-                    Intent.ShortcutIconResource.fromContext(applicationContext, R.mipmap.ic_lesson_plan));
-            //addIntent.putExtra("duplicate", false);
-            addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-            applicationContext.sendBroadcast(addIntent);
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(applicationContext, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private static void createShortcutOreo(Context applicationContext, final String title, final @Nullable String className) {
+
+        Intent shortcutIntent = new Intent(applicationContext, LessonPlanActivity.class);
+        shortcutIntent.setAction(Intent.ACTION_RUN);
+        if (className != null)
+            shortcutIntent.putExtra("name", className);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        ShortcutInfoCompat pinShortcutInfo =
+                new ShortcutInfoCompat.Builder(applicationContext, SHORTCUT_TIMETABLE_DYNAMIC_ID + className)
+                        .setIntent(shortcutIntent)
+                        .setIcon(IconCompat.createWithResource(applicationContext, R.mipmap.ic_lesson_plan))
+                        .setShortLabel(title)
+                        .setLongLabel(title)
+                        .build();
+
+        if (!ShortcutManagerCompat.requestPinShortcut(applicationContext, pinShortcutInfo, null))
+            createShortcutOld(applicationContext, title, className);
+
+    }
+
+    private static void createShortcutOld(Context applicationContext, final String title, final @Nullable String className) {
+        Intent shortcutIntent = new Intent(applicationContext, LessonPlanActivity.class);
+        if (className != null)
+            shortcutIntent.putExtra("name", className);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        Intent addIntent = new Intent();
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
+                Intent.ShortcutIconResource.fromContext(applicationContext, R.mipmap.ic_lesson_plan));
+        //addIntent.putExtra("duplicate", false);
+        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+        applicationContext.sendBroadcast(addIntent);
     }
 
     static boolean isPowerSaveMode(Context context) {
