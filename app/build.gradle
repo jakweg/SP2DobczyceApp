@@ -8,8 +8,8 @@ android {
         applicationId "blackeagle.sp2dobczyceapp"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 6
-        versionName "1.1.4"
+        versionCode 7
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

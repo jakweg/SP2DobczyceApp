@@ -1,7 +1,9 @@
 package blackeagle.sp2dobczyceapp;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -44,6 +46,23 @@ public class AverageMarkActivity extends AppCompatActivity {
         summaryText = findViewById(R.id.summary_text);
         summaryText.setBackgroundColor(Settings.getColor(this,
                 isDarkTheme ? R.color.sectionBackgroundDark : R.color.sectionBackground));
+
+        if (!Settings.shownAverageAlert) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(AverageMarkActivity.this);
+            builder.setTitle("Oblicz średnią");
+            builder.setMessage(Html.fromHtml(
+                    "Tutaj możesz łatwo obliczyć średnią z ocen na koniec roku\nPrzedmioty z oceną \'<b>-</b>\' nie są wliczane do średniej"));
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Settings.shownAverageAlert = true;
+                    Settings.saveSettings(AverageMarkActivity.this);
+                }
+            });
+
+            builder.create().show();
+        }
 
         loadFromFile();
     }
@@ -180,7 +199,7 @@ public class AverageMarkActivity extends AppCompatActivity {
         } else {
             float average = (float) sum / (float) count;
             summaryText.setText(Html.fromHtml(String.format(
-                    java.util.Locale.US, "Twoja średnia: <b>%.2f</b><br />%s",
+                    java.util.Locale.US, "Twoja średnia wynosi <b>%.2f</b><br/>%s",
                     average, average >= 4.75f ?
                             "Masz czerwony pasek na świadectwie \uD83D\uDE04"
                             : "Nie zasługujesz na pasek na świadectwie \uD83D\uDE1E")));
