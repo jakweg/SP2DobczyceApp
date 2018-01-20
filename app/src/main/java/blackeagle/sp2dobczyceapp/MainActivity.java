@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        item = menu.add("Lista przedmiotów");
+        item = menu.add(R.string.average_activity_title);
         item.setIcon(R.drawable.ic_toc);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {

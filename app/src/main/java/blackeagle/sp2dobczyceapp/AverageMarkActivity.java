@@ -202,7 +202,8 @@ public class AverageMarkActivity extends AppCompatActivity {
                     java.util.Locale.US, "Twoja średnia wynosi <b>%.2f</b><br/>%s",
                     average, average >= 4.75f ?
                             "Masz czerwony pasek na świadectwie \uD83D\uDE04"
-                            : "Nie zasługujesz na pasek na świadectwie \uD83D\uDE1E")));
+                            : "Nie zasługujesz na pasek na świadectwie \uD83D\uDE1E")
+                    .replace('.', ',')));
         }
     }
 
