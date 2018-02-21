@@ -26,6 +26,7 @@ public class LessonFinishService extends Service {
     NotificationCompat.Builder builder;
     int[] lessonCounts;
     boolean isStarted = false;
+    boolean hadBindToNotification = false;
     private LocalBroadcastManager localBroadcastManager;
     private boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     private LessonTimeManager.LessonState lessonState;
@@ -173,6 +174,7 @@ public class LessonFinishService extends Service {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                restartServiceWhenNeeded();
             }
         });
         workingThread.start();
@@ -239,6 +241,10 @@ public class LessonFinishService extends Service {
         //noinspection ConstantConditions
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
                 .notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
+        if (!hadBindToNotification) {
+            startForeground(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
+            hadBindToNotification = true;
+        }
     }
 
     private String getLeftTimeString() {
@@ -264,6 +270,7 @@ public class LessonFinishService extends Service {
             workingThread.interrupt();
         workingThread = null;
         cancelNotification();
+        stopForeground(true);
         if (stopListener != null)
             localBroadcastManager.unregisterReceiver(stopListener);
         localBroadcastManager = null;

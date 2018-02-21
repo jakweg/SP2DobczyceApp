@@ -101,6 +101,11 @@
         <activity
             android:name=".AverageMarkActivity"
             android:label="@string/average_activity_title" />
+
+        <service
+            android:name=".UpdateService$JobScheduler"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

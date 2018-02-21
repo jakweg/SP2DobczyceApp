@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -257,5 +258,22 @@ public class UpdateService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public static class JobScheduler extends JobIntentService {
+        public static final int JOB_ID = 0x01;
+
+        public static void startService(Context context, Intent work) {
+            enqueueWork(context, JobScheduler.class, JOB_ID, work);
+        }
+
+        @Override
+        protected void onHandleWork(@NonNull Intent intent) {
+            try {
+                UpdateService.stopService(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
