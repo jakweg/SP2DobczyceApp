@@ -10,7 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -18,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+
+import java.util.Calendar;
 
 public class UpdateService extends Service {
 
@@ -222,6 +226,15 @@ public class UpdateService extends Service {
 
     private boolean updateData() {
         try {
+            try {
+                Calendar c = Calendar.getInstance();
+                if (c.get(Calendar.DAY_OF_MONTH) == 1 && c.get(Calendar.MONTH) == Calendar.APRIL)
+                    RingtoneManager.getRingtone(getApplicationContext(),
+                            Uri.parse("android.resource://blackeagle.sp2dobczyceapp/raw/" + R.raw.new_message)).play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             UpdateManager.Result result = UpdateManager.update(this);
             if (!result.success)
                 return false;

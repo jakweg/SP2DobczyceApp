@@ -8,28 +8,30 @@ android {
         applicationId "blackeagle.sp2dobczyceapp"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 7
-        versionName "1.2"
+        versionCode 8
+        versionName '1.2.1'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     aaptOptions {
         additionalParameters '--utf16'
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:support-v4:26.1.0'
-    compile "me.leolin:ShortcutBadger:1.1.19@aar"
+    compile 'me.leolin:ShortcutBadger:1.1.19@aar'
     compile 'com.android.support:design:26.1.0'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
