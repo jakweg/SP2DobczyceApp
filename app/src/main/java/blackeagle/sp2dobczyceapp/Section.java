@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -219,5 +220,19 @@ class Section {
                 (int) context.getResources().getDimension(R.dimen.separator_height)));
 
         return view;
+    }
+
+    @SuppressLint("SetTextI18n")
+    static void createNoSubstituteLayout(Context context, LinearLayout parent) {
+        TextView view = new TextView(context);
+        view.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        int padding = (int) (context.getResources().getDimension(R.dimen.separator_height) * 3F);
+        view.setPadding(padding, padding * 2, padding, padding);
+        view.setText("Brak zastępstw\n\uD83D\uDE03");
+        view.setTextSize(20f);
+        view.setGravity(Gravity.CENTER);
+        parent.addView(view);
     }
 }

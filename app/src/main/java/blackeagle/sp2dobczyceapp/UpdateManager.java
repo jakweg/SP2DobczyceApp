@@ -320,10 +320,26 @@ class UpdateManager {
 
         void createViews(Context context, LinearLayout parent, int size) {
             boolean darkMode = Settings.applyNowDarkTheme();
-            for (String day : days) {
+            if (isNoSubstitute())
+                Section.createNoSubstituteLayout(context, parent);
+            else
+                for (String day : days) {
                 Section.createSection(context, day, size, parent, darkMode);
             }
             parent.addView(Section.createSeparator(context));
+        }
+
+        boolean isNoSubstitute() {
+            if (days.isEmpty())
+                return true;
+            if (days.size() != 1)
+                return false;
+            StringBuilder temp = new StringBuilder(days.get(0).length());
+            for (char c : days.get(0).toCharArray()) {
+                if (Character.isLetter(c))
+                    temp.append(c);
+            }
+            return (temp.toString().equalsIgnoreCase("brakzastępstw"));
         }
 
         void createLuckyNumberView(Context context, LinearLayout parent, int size) {
