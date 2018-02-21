@@ -60,6 +60,7 @@ abstract class Settings {
     static byte lessonPlanRule = (byte) LessonPlanManager.LessonPlan.RULE_SHOW_CLASSROOM | LessonPlanManager.LessonPlan.RULE_SHOW_SUBJECT | LessonPlanManager.LessonPlan.RULE_SHOW_TEACHER;
     static int darkModeState;
     static boolean shownAverageAlert = false;
+    static boolean seenWidget = false;
     private static boolean isLoaded = false;
 
     static boolean isUserLuckyNumber() {
@@ -130,6 +131,7 @@ abstract class Settings {
             updateDate = preferences.getLong("updateDate", 0);
             showBadges = preferences.getBoolean("showBadges", false);
             shownAverageAlert = preferences.getBoolean("shownAverageAlert", false);
+            seenWidget = preferences.getBoolean("seenWidget", false);
 
 
             if (isReady) {
@@ -167,6 +169,7 @@ abstract class Settings {
             editor.putLong("updateDate", updateDate);
             editor.putBoolean("showBadges", showBadges);
             editor.putBoolean("shownAverageAlert", shownAverageAlert);
+            editor.putBoolean("seenWidget", seenWidget);
 
             if (isReady)
                 editor.putInt("lastVersion", 1);

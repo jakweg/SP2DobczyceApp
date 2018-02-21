@@ -87,38 +87,48 @@ public class LessonPlanActivity extends AppCompatActivity {
 
 
         if (!Settings.isClassSelected()) {
-            new Thread(new Runnable() {
+            toolbar.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                    Snackbar.make(lessonTimeLayout, R.string.no_class_selected, BaseTransientBottomBar.LENGTH_INDEFINITE)
-                                            .setAction(R.string.set_class_now, new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    finish();
-                                                    Intent intent = new Intent(LessonPlanActivity.this, MainActivity.class);
-                                                    intent.putExtra("openSettings", true);
-                                                    startActivity(intent);
-                                                }
-                                            }).show();
-                                else
-                                    Toast.makeText(LessonPlanActivity.this, R.string.no_class_selected, Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                //empty
-                            }
-                        }
-                    });
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                        Snackbar.make(lessonTimeLayout, R.string.no_class_selected, BaseTransientBottomBar.LENGTH_INDEFINITE)
+                                .setAction(R.string.set_class_now, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        finish();
+                                        Intent intent = new Intent(LessonPlanActivity.this, MainActivity.class);
+                                        intent.putExtra("openSettings", true);
+                                        startActivity(intent);
+                                    }
+                                }).show();
+                    else
+                        Toast.makeText(LessonPlanActivity.this, R.string.no_class_selected, Toast.LENGTH_LONG).show();
                 }
-            }).start();
+            }, 500);
+        } else if (!Settings.seenWidget) {
+            toolbar.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                        Snackbar.make(lessonTimeLayout, "Chcesz mieć łatwiejszy dostęp do planu lekcji?",
+                                BaseTransientBottomBar.LENGTH_INDEFINITE).setAction("No pewnie", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                new AlertDialog.Builder(LessonPlanActivity.this)
+                                        .setMessage("Na głównym ekranie (tam gdzie masz ikony aplikacji) możesz utworzyć widżet planu lekcji.\nWtedy nie trzeba wchodzić nawet do aplikacji!")
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                            @Override
+                                            public void onDismiss(DialogInterface dialog) {
+                                                Settings.seenWidget = true;
+                                                Settings.saveSettings(LessonPlanActivity.this);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }).show();
+                }
+            }, 10000);
         }
     }
 

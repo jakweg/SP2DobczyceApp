@@ -71,6 +71,10 @@ public class LessonPlanWidget extends AppWidgetProvider {
                 }
             }
 
+            if (!Settings.seenWidget) {
+                Settings.seenWidget = true;
+                Settings.saveSettings(context);
+            }
 
             appWidgetManager.updateAppWidget(appWidgetId, views);
         } catch (Exception e) {
