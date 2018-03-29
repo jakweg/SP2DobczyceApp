@@ -26,7 +26,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -39,6 +38,7 @@ abstract class Settings {
     static final String SHORTCUT_TIMETABLE_DYNAMIC_ID = "blackeagle.sp2dobczyce.shortcut.timetable.";
 
     static final int REFRESH_TIME_IN_MILLIS = 2 * 60 * 60 * 1000;
+    //static final int REFRESH_TIME_IN_MILLIS = 2 * 1000;
 
     static final int DARK_MODE_ALWAYS = 2;
     static final int DARK_MODE_AUTO = 1;
@@ -136,6 +136,8 @@ abstract class Settings {
 
             if (isReady) {
                 int lastVersion = preferences.getInt("lastVersion", 0);
+                if (lastVersion == 1)
+                    isReady = false;
                 if (lastVersion == 0)
                     updateToVersion(lastVersion, context);
             }
@@ -144,8 +146,10 @@ abstract class Settings {
         } catch (Exception e) {
             //empty
         }
-        UpdateService.startService(context);
-        LessonFinishService.startService(context);
+        try {
+            setUpUpdateService(context);
+            LessonFinishService.startService(context);
+        } catch (Exception e) { /*is in background*/ }
     }
 
     static void saveSettings(Context context) {
@@ -172,7 +176,7 @@ abstract class Settings {
             editor.putBoolean("seenWidget", seenWidget);
 
             if (isReady)
-                editor.putInt("lastVersion", 1);
+                editor.putInt("lastVersion", 2);
 
             editor.apply();
 
@@ -272,6 +276,14 @@ abstract class Settings {
         }
     }
 
+    static void setUpUpdateService(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            //noinspection deprecation
+            UpdateServiceOld.startService(context);
+        else
+            UpdateJobService.setUpUpdating(context);
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private static void createShortcutOreo(Context applicationContext, final String title, final @Nullable String className) {
 
@@ -337,6 +349,7 @@ abstract class Settings {
                 //noinspection deprecation
                 drawable = ContextCompat.getDrawable(context, id);
             }
+            //noinspection ConstantConditions
             drawable.setColorFilter(new PorterDuffColorFilter(
                     Settings.getColor(context, isDarkTheme ? R.color.white : R.color.black),
                     PorterDuff.Mode.SRC_IN));
@@ -354,22 +367,20 @@ abstract class Settings {
         if (manager == null)
             return;
 
-        NotificationChannel newsChannel = new NotificationChannel(CHANNEL_ID_NEWS, "Kanał zastępstw", NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel newsChannel = new NotificationChannel(CHANNEL_ID_NEWS, "Zastępstwa i szczęśliwe numerki", NotificationManager.IMPORTANCE_DEFAULT);
         newsChannel.setShowBadge(true);
         newsChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         newsChannel.enableVibration(true);
         newsChannel.enableLights(true);
 
-        NotificationChannel lessonTimeChannel = new NotificationChannel(CHANNEL_ID_LESSON_TIME, "Kanał odliczania", NotificationManager.IMPORTANCE_MIN);
+        NotificationChannel lessonTimeChannel = new NotificationChannel(CHANNEL_ID_LESSON_TIME, "Odliczanie do końca lekcji", NotificationManager.IMPORTANCE_LOW);
         lessonTimeChannel.setShowBadge(false);
         lessonTimeChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         lessonTimeChannel.enableVibration(false);
         lessonTimeChannel.enableLights(false);
 
-        ArrayList<NotificationChannel> list = new ArrayList<>();
-        list.add(newsChannel);
-        list.add(lessonTimeChannel);
-        manager.createNotificationChannels(list);
+        manager.createNotificationChannel(newsChannel);
+        manager.createNotificationChannel(lessonTimeChannel);
     }
 
     interface OnSettingsChangeListener {

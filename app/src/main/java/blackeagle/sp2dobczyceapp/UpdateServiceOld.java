@@ -9,22 +9,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.JobIntentService;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-import java.util.Calendar;
-
-public class UpdateService extends Service {
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated
+public class UpdateServiceOld extends Service {
 
     private final static String ACTION_STOP_SERVICE = "UpdateService.stop";
     private static boolean isStarting = false;
@@ -45,7 +39,8 @@ public class UpdateService extends Service {
                 return;
             if (!Settings.canWorkInBackground)
                 return;
-            context.getApplicationContext().startService(new Intent(context, UpdateService.class));
+            //noinspection deprecation
+            context.getApplicationContext().startService(new Intent(context, UpdateServiceOld.class));
         } finally {
             isStarting = false;
         }
@@ -153,7 +148,8 @@ public class UpdateService extends Service {
     }
 
     private void restartAt(long millis) {
-        Intent intent = new Intent(this, UpdateService.class);
+        //noinspection deprecation
+        Intent intent = new Intent(this, UpdateServiceOld.class);
         alarmManager.set(AlarmManager.RTC_WAKEUP, millis,
                 PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
     }
@@ -165,11 +161,13 @@ public class UpdateService extends Service {
                 try {
                     Thread.sleep(10 * 1000);
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Settings.isPowerSaveMode(UpdateService.this)) {
+                    //noinspection deprecation
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Settings.isPowerSaveMode(UpdateServiceOld.this)) {
                         startWaitingForBattery();
                         return;
                     }
-                    if (!Settings.isOnline(UpdateService.this) || !updateData()) {
+                    //noinspection deprecation
+                    if (!Settings.isOnline(UpdateServiceOld.this) || !updateData()) {
                         startWaitingForNetwork();
                         return;
                     }
@@ -184,65 +182,15 @@ public class UpdateService extends Service {
         }).start();
     }
 
-    @NonNull
-    private Notification createNotification(@NonNull UpdateManager.Result result) {
-        boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
-        //noinspection deprecation
-        NotificationCompat.Builder builder = useOldNotification ?
-                new NotificationCompat.Builder(this) :
-                new NotificationCompat.Builder(this, Settings.CHANNEL_ID_NEWS);
-
-        builder.setSmallIcon(R.drawable.ic_school_png);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.ic_launcher_round));
-        builder.setContentTitle(getString(R.string.school_news));
-        builder.setAutoCancel(true);
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("fromNotification", true);
-        builder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), PendingIntent.FLAG_UPDATE_CURRENT,
-                intent, Intent.FILL_IN_ACTION));
-
-        if (useOldNotification) {
-            builder.setPriority(Notification.PRIORITY_HIGH);
-            if (Settings.canNotify)
-                builder.setDefaults(Notification.DEFAULT_ALL);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder.setCategory(Notification.CATEGORY_EVENT);
-                builder.setVisibility(Notification.VISIBILITY_PUBLIC);
-            }
-        }
-
-        if (result.newCount > 0) { //zastępstwa
-            builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
-            if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
-                builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
-            else
-                builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
-        } else if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber()) { //brak zastepstw ale numerek
-            builder.setContentText("Twój szczęśliwy numerek \uD83D\uDE0A");
-            builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
-        }
-
-        return builder.build();
-    }
-
     private boolean updateData() {
         try {
-            try {
-                Calendar c = Calendar.getInstance();
-                if (c.get(Calendar.DAY_OF_MONTH) == 1 && c.get(Calendar.MONTH) == Calendar.APRIL)
-                    RingtoneManager.getRingtone(getApplicationContext(),
-                            Uri.parse("android.resource://blackeagle.sp2dobczyceapp/raw/" + R.raw.new_message)).play();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
             UpdateManager.Result result = UpdateManager.update(this);
             if (!result.success)
                 return false;
             if (!result.updated || !result.areNewsForUser())
                 return true;
 
-            Notification notification = createNotification(result);
+            Notification notification = UpdateManager.createNotification(result, this);
 
             NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (manager != null)
@@ -258,22 +206,5 @@ public class UpdateService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public static class JobScheduler extends JobIntentService {
-        public static final int JOB_ID = 0x01;
-
-        public static void startService(Context context, Intent work) {
-            enqueueWork(context, JobScheduler.class, JOB_ID, work);
-        }
-
-        @Override
-        protected void onHandleWork(@NonNull Intent intent) {
-            try {
-                UpdateService.stopService(this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

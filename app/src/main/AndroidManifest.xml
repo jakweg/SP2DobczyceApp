@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!--TODO check this permission !-->
 
     <application
         android:allowBackup="false"
@@ -70,8 +71,9 @@
             </intent-filter>
         </activity>
 
+        <!--suppress DeprecatedClassUsageInspection -->
         <service
-            android:name=".UpdateService"
+            android:name=".UpdateServiceOld"
             android:enabled="true"
             android:exported="false" />
         <service
@@ -103,7 +105,7 @@
             android:label="@string/average_activity_title" />
 
         <service
-            android:name=".UpdateService$JobScheduler"
+            android:name=".UpdateJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>

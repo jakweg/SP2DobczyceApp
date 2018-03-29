@@ -23,26 +23,16 @@ public class AboutActivity extends AppCompatActivity {
             setTheme(R.style.DarkTheme);
         setContentView(R.layout.activity_about);
 
-        new Thread(new Runnable() {
+        final ViewGroup viewGroup = ((ScrollView) findViewById(R.id.scrollBox));
+        viewGroup.postDelayed(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(150);
-                } catch (InterruptedException e) {
-                    //empty
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ViewGroup viewGroup = ((ScrollView) findViewById(R.id.scrollBox));
-                        Animation translateAnimation = new AlphaAnimation(0.f, 1.f);
-                        translateAnimation.setDuration(400);
-                        viewGroup.setAlpha(1.f);
-                        viewGroup.startAnimation(translateAnimation);
-                    }
-                });
+                Animation translateAnimation = new AlphaAnimation(0.f, 1.f);
+                translateAnimation.setDuration(400);
+                viewGroup.setAlpha(1.f);
+                viewGroup.startAnimation(translateAnimation);
             }
-        }).start();
+        }, 150);
 
 
         findViewById(R.id.app_icon).setOnClickListener(new View.OnClickListener() {

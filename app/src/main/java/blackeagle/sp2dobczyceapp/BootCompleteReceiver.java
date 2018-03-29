@@ -11,13 +11,11 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                UpdateService.startService(context);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 LessonFinishService.startService(context);
-            } else {
-                UpdateService.JobScheduler.startService(context, intent);
+            else
                 context.startForegroundService(new Intent(context, LessonFinishService.class));
-            }
+            Settings.setUpUpdateService(context);
         } catch (Exception e) {
             e.printStackTrace();
         }

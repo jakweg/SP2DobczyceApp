@@ -28,8 +28,6 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 
 @SuppressLint("ExportedPreferenceActivity")
 public class SettingsActivity extends PreferenceActivity implements Settings.OnSettingsChangeListener {
-
-
     String lastClass;
     Intent returnData = new Intent();
     private boolean isDarkTheme;
@@ -130,10 +128,14 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (newValue instanceof String)
                         Settings.className = (String) newValue;
-                    else if (!(newValue instanceof Boolean)) {
+                    else if (newValue instanceof Boolean) {
                         Settings.isTeacher = (boolean) newValue;
-                        Settings.className = Settings.isTeacher ?
-                                LessonPlanManager.teacherList.get(0) : LessonPlanManager.classesList.get(0);
+                        if (Settings.isTeacher) {
+                            Settings.className = LessonPlanManager.teacherList.get(0);
+                        } else {
+                            Settings.className = LessonPlanManager.classesList.get(0);
+                        }
+                        Settings.usersNumber = 0;
                     }
 
                     if (Settings.isTeacher) {
@@ -264,9 +266,10 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (Settings.canWorkInBackground = (boolean) newValue)
-                        UpdateService.startService(context);
-                    else
-                        UpdateService.stopService(context);
+                        Settings.setUpUpdateService(context);
+                    else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+                        //noinspection deprecation
+                        UpdateServiceOld.stopService(context);
                     return true;
                 }
             });

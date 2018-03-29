@@ -267,7 +267,7 @@ public class WelcomeActivity extends AppCompatActivity {
             Settings.isTeacher = isTeacher;
             Settings.isReady = true;
             Settings.saveSettings(WelcomeActivity.this);
-            UpdateService.startService(getApplicationContext());
+            Settings.setUpUpdateService(this);
             finish();
             startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
         }

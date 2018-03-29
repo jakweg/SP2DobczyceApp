@@ -1,9 +1,14 @@
 package blackeagle.sp2dobczyceapp;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -283,11 +288,11 @@ class UpdateManager {
         return section.contains("strój apelowy");
     }
 
-    static String getNewsUpdateInfo(int count) {
+    private static String getNewsUpdateInfo(int count) {
         if (count == 0)
-            return "Brak nowych zastępstw dla ciebie";
+            return "Brak nowych zastępstw dla Ciebie";
         if (count == 1)
-            return "Jedno nowe zastępstwo dla ciebie";
+            return "Jedno nowe zastępstwo dla Ciebie";
         if (count < 5)
             return "Dostępne są " + String.valueOf(count) + " nowe zastępstwa";
 
@@ -296,13 +301,54 @@ class UpdateManager {
 
     static String getUpdateInfo(int count) {
         if (count == 0)
-            return "Brak zastępstw dla ciebie";
+            return "Brak zastępstw dla Ciebie";
         if (count == 1)
-            return "Jedno zastępstwo dla ciebie";
+            return "Jedno zastępstwo dla Ciebie";
         if (count < 5)
             return "Dostępne są " + String.valueOf(count) + " zastępstwa";
 
         return "Dostępne jest " + String.valueOf(count) + " zastępstw";
+    }
+
+    @NonNull
+    static Notification createNotification(@NonNull UpdateManager.Result result, Context context) {
+        boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
+        //noinspection deprecation
+        NotificationCompat.Builder builder = useOldNotification ?
+                new NotificationCompat.Builder(context) :
+                new NotificationCompat.Builder(context, Settings.CHANNEL_ID_NEWS);
+
+        builder.setSmallIcon(R.drawable.ic_school_png);
+        builder.setLargeIcon(BitmapFactory.decodeResource(context.getApplicationContext().getResources(), R.mipmap.ic_launcher_round));
+        builder.setContentTitle(context.getString(R.string.school_news));
+        builder.setAutoCancel(true);
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("fromNotification", true);
+        builder.setContentIntent(PendingIntent.getActivity(context.getApplicationContext(), PendingIntent.FLAG_UPDATE_CURRENT,
+                intent, Intent.FILL_IN_ACTION));
+
+        if (useOldNotification) {
+            builder.setPriority(Notification.PRIORITY_HIGH);
+            if (Settings.canNotify)
+                builder.setDefaults(Notification.DEFAULT_ALL);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setCategory(Notification.CATEGORY_EVENT);
+                builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+            }
+        }
+
+        if (result.newCount > 0) { //zastępstwa
+            builder.setContentText(UpdateManager.getNewsUpdateInfo(result.newCount));
+            if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber())
+                builder.setSubText("Twój szczęśliwy numerek \uD83D\uDE0A");
+            else
+                builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
+        } else if (result.hasChangedLuckyNumbers && Settings.isUserLuckyNumber()) { //brak zastepstw ale numerek
+            builder.setContentText("Twój szczęśliwy numerek \uD83D\uDE0A");
+            builder.setSubText(String.format("Szczęśliwe numerki: %s i %s", Settings.luckyNumber1, Settings.luckyNumber2));
+        }
+
+        return builder.build();
     }
 
     static class Result {
@@ -314,6 +360,7 @@ class UpdateManager {
         boolean hasChangedLuckyNumbers = false;
         List<String> days = new ArrayList<>();
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean areNewsForUser() {
             return newCount != 0 || (hasChangedLuckyNumbers && Settings.isUserLuckyNumber());
         }

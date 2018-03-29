@@ -126,7 +126,7 @@ public class LessonFinishService extends Service {
         return START_STICKY;
     }
 
-    private boolean sleepToLessons() throws InterruptedException {
+    private boolean sleepToLessons() {
         try {
             if (isWeekend()) {
                 restartServiceWhenNeeded();
@@ -221,6 +221,7 @@ public class LessonFinishService extends Service {
             }
         }
 
+
         switch (lessonState.thisState) {
             case LessonTimeManager.LESSON:
                 builder.setContentTitle("Aktualnie trwa " + String.valueOf(lessonState.lessonNumber + 1) + " lekcja");
@@ -236,6 +237,7 @@ public class LessonFinishService extends Service {
                 break;
         }
 
+        builder.setPublicVersion(builder.build());
         notification = builder.build();
         notification.flags |= Notification.FLAG_NO_CLEAR;
         //noinspection ConstantConditions

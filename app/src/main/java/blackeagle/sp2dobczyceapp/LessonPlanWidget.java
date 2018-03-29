@@ -8,12 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
 public class LessonPlanWidget extends AppWidgetProvider {
-
-
     static int[] widgetIds;
 
     @SuppressLint("SwitchIntDef")
@@ -115,13 +114,17 @@ public class LessonPlanWidget extends AppWidgetProvider {
     }
 
     public static void refreshWidgets(Context context) {
-        if (widgetIds == null)
-            return;
-        Intent intent = new Intent(context, LessonPlanWidget.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int[] ids = widgetIds;
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-        context.sendBroadcast(intent);
+        try {
+            if (widgetIds == null)
+                return;
+            Intent intent = new Intent(context, LessonPlanWidget.class);
+            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            int[] ids = widgetIds;
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+            context.sendBroadcast(intent);
+        } catch (Exception e) {
+            Toast.makeText(context, "Nie można odświeżyć widżetów: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
