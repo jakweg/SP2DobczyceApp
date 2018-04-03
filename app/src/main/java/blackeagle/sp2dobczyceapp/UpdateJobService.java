@@ -11,9 +11,11 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import java.util.Objects;
+
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class UpdateJobService extends JobService {
-    static final int UPDATE_REQUEST = 1;
+    static final int JOB_UPDATE = 1;
     JobParameters mParams;
     Thread mThread = new Thread(new Runnable() {
         @Override
@@ -35,8 +37,11 @@ public class UpdateJobService extends JobService {
                 success = false;
             } finally {
                 jobFinished(mParams, !success);
-                if (success)
-                    setUpUpdating(UpdateJobService.this);
+                if (success) {
+                    forceSchedule(((JobScheduler)
+                                    Objects.requireNonNull(getSystemService(JOB_SCHEDULER_SERVICE))),
+                            getApplicationContext());
+                }
             }
         }
     });
@@ -49,14 +54,17 @@ public class UpdateJobService extends JobService {
         if (scheduler == null) return;
         boolean isAlready = false;
         for (JobInfo ji : scheduler.getAllPendingJobs())
-            if (ji.getId() == UPDATE_REQUEST) {
+            if (ji.getId() == JOB_UPDATE) {
                 isAlready = true;
                 break;
             }
 
         if (isAlready) return;
-        scheduler.cancel(UPDATE_REQUEST);
-        scheduler.schedule(new JobInfo.Builder(UPDATE_REQUEST,
+        forceSchedule(scheduler, context);
+    }
+
+    private static void forceSchedule(JobScheduler scheduler, Context context) {
+        scheduler.schedule(new JobInfo.Builder(JOB_UPDATE,
                 new ComponentName(context, UpdateJobService.class))
                 //.setRequiresBatteryNotLow(true)
                 .setMinimumLatency(Settings.REFRESH_TIME_IN_MILLIS)
