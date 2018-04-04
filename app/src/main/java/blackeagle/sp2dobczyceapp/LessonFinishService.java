@@ -121,6 +121,16 @@ public class LessonFinishService extends Service {
         Settings.createNotificationChannels(getApplicationContext());
         alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+
+        /*NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            Notification notification = new NotificationCompat.Builder(this, Settings.CHANNEL_ID_LESSON_TIME)
+                    .setContentText("Odliczanie do końca lekcji")
+                    .build();
+            manager.notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
+            startForeground(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
+        }*/
+
         runNotification();
 
         return START_STICKY;
@@ -275,6 +285,7 @@ public class LessonFinishService extends Service {
         stopForeground(true);
         if (stopListener != null)
             localBroadcastManager.unregisterReceiver(stopListener);
+        stopListener = null;
         localBroadcastManager = null;
         if (screenOnListener != null)
             unregisterReceiver(screenOnListener);
