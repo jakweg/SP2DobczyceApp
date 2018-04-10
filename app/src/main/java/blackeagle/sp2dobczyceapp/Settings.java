@@ -15,6 +15,7 @@ import android.os.PowerManager;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
@@ -39,13 +40,15 @@ abstract class Settings {
 
     static final int REFRESH_TIME_IN_MILLIS = 2 * 60 * 60 * 1000;
     //static final int REFRESH_TIME_IN_MILLIS = 2 * 1000;
-//TODO chechk utf 16 emoticons :)
+
     static final int DARK_MODE_ALWAYS = 2;
     static final int DARK_MODE_AUTO = 1;
     static final int DARK_MODE_NEVER = 0;
     static final int NOTIFICATION_ID_UPDATE_RESULT = 1;
     static final int NOTIFICATION_ID_LESSON_FINISH = 2;
     static boolean isReady = false;
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     static boolean showBadges = false;
     static boolean isTeacher;
     static String className = "";
@@ -129,6 +132,7 @@ abstract class Settings {
             luckyNumber1 = preferences.getInt("luckyNumber1", -1);
             luckyNumber2 = preferences.getInt("luckyNumber2", -1);
             updateDate = preferences.getLong("updateDate", 0);
+            //noinspection deprecation
             showBadges = preferences.getBoolean("showBadges", false);
             shownAverageAlert = preferences.getBoolean("shownAverageAlert", false);
             seenWidget = preferences.getBoolean("seenWidget", false);
@@ -171,6 +175,7 @@ abstract class Settings {
             editor.putInt("luckyNumber1", luckyNumber1);
             editor.putInt("luckyNumber2", luckyNumber2);
             editor.putLong("updateDate", updateDate);
+            //noinspection deprecation
             editor.putBoolean("showBadges", showBadges);
             editor.putBoolean("shownAverageAlert", shownAverageAlert);
             editor.putBoolean("seenWidget", seenWidget);
@@ -221,7 +226,7 @@ abstract class Settings {
         }
     }
 
-    static boolean containsDigit(String str) {
+    static boolean containsDigit(@NonNull String str) {
         for (char c : str.toCharArray()) {
             if (Character.isDigit(c))
                 return true;

@@ -23,8 +23,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.text.InputType;
 import android.widget.Toast;
 
-import me.leolin.shortcutbadger.ShortcutBadger;
-
 
 @SuppressLint("ExportedPreferenceActivity")
 public class SettingsActivity extends PreferenceActivity implements Settings.OnSettingsChangeListener {
@@ -52,9 +50,6 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
 
     @Override
     public void onClassChange() {
-        try {
-            ShortcutBadger.removeCount(getApplicationContext());
-        } catch (Exception e) {/*xd*/ }
         LessonFinishService.stopService(this);
         LessonFinishService.startService(getApplicationContext());
         LessonPlanWidget.refreshWidgets(getApplicationContext());
@@ -229,27 +224,6 @@ public class SettingsActivity extends PreferenceActivity implements Settings.OnS
                 }
             });
             category.addPreference(darkThemeList);
-
-            try {
-                if (ShortcutBadger.isBadgeCounterSupported(context.getApplicationContext())) {
-                    CheckBoxPreference showBadgesCheckBox = new CheckBoxPreference(context);
-                    showBadgesCheckBox.setTitle("Liczba zastępstw na pulpicie");
-                    showBadgesCheckBox.setKey("showBadges");
-                    showBadgesCheckBox.setSummary("Pokazuj liczbę zastępstw na ikonie w ekranie głównym");
-                    showBadgesCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                        @Override
-                        public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            Settings.showBadges = (boolean) newValue;
-                            if (!((boolean) newValue))
-                                ShortcutBadger.removeCount(context.getApplicationContext());
-                            return true;
-                        }
-                    });
-                    category.addPreference(showBadgesCheckBox);
-                }
-            } catch (Exception e) {
-                //xd
-            }
 
             category = new PreferenceCategory(context);
             category.setTitle(R.string.working_in_background);

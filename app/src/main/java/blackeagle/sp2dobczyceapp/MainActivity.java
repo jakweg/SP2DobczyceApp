@@ -244,15 +244,15 @@ public class MainActivity extends AppCompatActivity {
                         if (refreshResult.updated) {
                             if (refreshResult.newCount > 0) {
                                 if (refreshResult.newCount == 1)
-                                    showSnackbarMessage(R.string.one_new);
+                                    showSnackbarMessage("✔ Zaktualizowano (jedne nowe aktualnści) \uD83D\uDE0A");
                                 else if (refreshResult.newCount < 5)
-                                    showSnackbarMessage(getString(R.string.something_is_new1, refreshResult.newCount));
+                                    showSnackbarMessage("✔ Zaktualizowano (%d nowe aktualności) \uD83D\uDE0A");
                                 else
-                                    showSnackbarMessage(getString(R.string.something_is_new2, refreshResult.newCount));
+                                    showSnackbarMessage("✔ Zaktualizowano (%d nowych aktualności) \uD83D\uDE0A");
                             } else
-                                showSnackbarMessage(R.string.updated);
+                                showSnackbarMessage("✔ Zaktualizowano");
                         } else if (!ignoreNoUpdate)
-                            showSnackbarMessage(R.string.nothing_is_new);
+                            showSnackbarMessage("Nic nowego \uD83D\uDE10");
                     }
 
                     ignoreNoUpdate = false;
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                     mainLayout.startAnimation(animation);
 
                 } else {
-                    showSnackbarMessage(R.string.cannot_refresh);
+                    showSnackbarMessage("Nie można odświeżyć \uD83D\uDE14");
                 }
             }
         });

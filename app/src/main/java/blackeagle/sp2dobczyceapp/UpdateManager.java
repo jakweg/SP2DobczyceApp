@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import me.leolin.shortcutbadger.ShortcutBadger;
-
 class UpdateManager {
 
     private final static Object mutex = new Object();
@@ -99,12 +97,6 @@ class UpdateManager {
                 }
 
                 result.allNewsCount = substitutesList.size();
-                try {
-                    if (Settings.showBadges)
-                        ShortcutBadger.applyCount(context.getApplicationContext(), result.allNewsCount);
-                    else
-                        ShortcutBadger.removeCount(context.getApplicationContext());
-                } catch (Exception e) {/*xd*/ }
 
                 try {
                     String lastContent = "";

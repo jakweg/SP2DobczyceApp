@@ -11,11 +11,6 @@
     <string name="done">Gotowe</string>
     <string name="welcome_text">Witaj w aplikacji</string>
     <string name="cannot_refresh">Nie można odświeżyć 😔</string>
-    <string name="one_new" formatted="false">✔ Zaktualizowano (jedne nowe aktualnści) 😊</string>
-    <string name="something_is_new1" formatted="false">✔ Zaktualizowano (%d nowe aktualności) 😊</string>
-    <string name="something_is_new2" formatted="false">✔ Zaktualizowano (%d nowych aktualności) 😊</string>
-    <string name="updated">✔ Zaktualizowano</string>
-    <string name="nothing_is_new">Nic nowego 😐</string>
     <string name="timetable">Plan lekcji</string>
     <string name="settings">Ustawienia</string>
     <string name="no_class_selected">Nie wybrano klasy 😐</string>

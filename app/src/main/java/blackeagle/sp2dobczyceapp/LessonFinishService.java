@@ -26,7 +26,6 @@ public class LessonFinishService extends Service {
     NotificationCompat.Builder builder;
     int[] lessonCounts;
     boolean isStarted = false;
-    boolean hadBindToNotification = false;
     private LocalBroadcastManager localBroadcastManager;
     private boolean useOldNotification = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     private LessonTimeManager.LessonState lessonState;
@@ -96,7 +95,7 @@ public class LessonFinishService extends Service {
         calendar.set(Calendar.SECOND, 0);
 
         alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), getAlarmIntent());
-        stopSelf();
+        stopService();
     }
 
     @Override
@@ -106,30 +105,30 @@ public class LessonFinishService extends Service {
         isStarted = true;
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         Settings.loadSettings(this);
+
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            Notification notification = new NotificationCompat.Builder(this, Settings.CHANNEL_ID_LESSON_TIME)
+                    .setContentText("Odliczanie do końca lekcji")
+                    .build();
+            //manager.notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
+            startForeground(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
+        }
+
         if (!Settings.showFinishTimeNotification) {
-            stopSelf();
+            stopService();
             return START_NOT_STICKY;
         }
         stopListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                stopSelf();
+                stopService();
             }
         };
         localBroadcastManager.registerReceiver(stopListener, new IntentFilter(ACTION_STOP_SERVICE));
 
         Settings.createNotificationChannels(getApplicationContext());
         alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-
-        /*NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (manager != null) {
-            Notification notification = new NotificationCompat.Builder(this, Settings.CHANNEL_ID_LESSON_TIME)
-                    .setContentText("Odliczanie do końca lekcji")
-                    .build();
-            manager.notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
-            startForeground(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
-        }*/
 
         runNotification();
 
@@ -253,10 +252,6 @@ public class LessonFinishService extends Service {
         //noinspection ConstantConditions
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
                 .notify(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
-        if (!hadBindToNotification) {
-            startForeground(Settings.NOTIFICATION_ID_LESSON_FINISH, notification);
-            hadBindToNotification = true;
-        }
     }
 
     private String getLeftTimeString() {
@@ -275,14 +270,17 @@ public class LessonFinishService extends Service {
                     "Pozostały " + second + " sekundy";
     }
 
+    private void stopService() {
+        stopForeground(true);
+        stopSelf();
+    }
+    
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (workingThread != null)
             workingThread.interrupt();
         workingThread = null;
-        cancelNotification();
-        stopForeground(true);
         if (stopListener != null)
             localBroadcastManager.unregisterReceiver(stopListener);
         stopListener = null;
@@ -290,6 +288,7 @@ public class LessonFinishService extends Service {
         if (screenOnListener != null)
             unregisterReceiver(screenOnListener);
         screenOnListener = null;
+        cancelNotification();
     }
 
     @Override
